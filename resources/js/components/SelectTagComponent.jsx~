@@ -1,0 +1,86 @@
+import { Badge } from '@/components/ui/badge.jsx';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+// import { cn } from '@/lib/utils';
+import { usePage } from '@inertiajs/react';
+import { X } from 'lucide-react';
+import React from 'react';
+
+// Add the cn function directly in this file since it's not being imported
+const cn = (...classes) => {
+    return classes.filter(Boolean).join(' ');
+};
+
+export default function SelectTagComponent({ data, setData, errors }) {
+    const { tags } = usePage().props;
+    const [selectedTags, setSelectedTags] = React.useState(tags.filter((tag) => data.tags.includes(tag.id)));
+
+    const handleSelect = (tag) => {
+        // Check if tag is already selected
+        const isSelected = selectedTags.some((t) => t.id === tag.id);
+
+        // Create new array of tags
+        const newSelectedTags = isSelected ? selectedTags.filter((t) => t.id !== tag.id) : [...selectedTags, tag];
+
+        // Update local state
+        setSelectedTags(newSelectedTags);
+
+        // Update parent state with tag IDs
+        const selectedIds = newSelectedTags.map((t) => t.id);
+        setData('tags', selectedIds);
+    };
+
+    const removeTag = (tagId) => {
+        const newSelectedTags = selectedTags.filter((tag) => tag.id !== tagId);
+        setSelectedTags(newSelectedTags);
+
+        const selectedIds = newSelectedTags.map((tag) => tag.id);
+        setData('tags', selectedIds);
+    };
+
+    return (
+        <div className="mb-4">
+            <label className="mb-1 block font-semibold">Tags</label>
+            <Popover>
+                <PopoverTrigger asChild>
+                    <div className="flex min-h-10 cursor-pointer flex-wrap gap-1 rounded-md border p-2">
+                        {selectedTags.length > 0 ? (
+                            selectedTags.map((tag) => (
+                                <Badge key={tag.id} className="flex items-center gap-1">
+                                    {tag.name}
+                                    <X
+                                        className="h-3 w-3 cursor-pointer"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeTag(tag.id);
+                                        }}
+                                    />
+                                </Badge>
+                            ))
+                        ) : (
+                            <div className="text-gray-400">Select tags...</div>
+                        )}
+                    </div>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                    <Command>
+                        <CommandInput placeholder="Search tags..." />
+                        <CommandEmpty>No tags found.</CommandEmpty>
+                        <CommandGroup>
+                            {tags.map((tag) => (
+                                <CommandItem
+                                    key={tag.id}
+                                    onSelect={() => handleSelect(tag)}
+                                    className={cn('cursor-pointer', selectedTags.some((t) => t.id === tag.id) && 'bg-gray-100')}
+                                >
+                                    {tag.name}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </Command>
+                </PopoverContent>
+            </Popover>
+            {errors.tags && <div className="mt-1 text-sm text-red-500">{errors.tags}</div>}
+        </div>
+    );
+}

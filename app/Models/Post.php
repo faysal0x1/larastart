@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model
+{
+	//
+
+	protected $fillable = [
+		'title', 'body',
+		'published_at',
+		'user_id'
+	];
+
+	protected $guarded = [];
+
+	public function user() {
+		return $this->belongsTo(User::class);
+	}
+
+	public function tags() {
+		return $this->belongsToMany(Tag::class);
+	}
+
+
+	public function scopePublished($query) {
+		return $query->where('published_at', '<=', now());
+	}
+
+	public function scopeUnpublished($query) {
+		return $query->where('published_at', '>', now());
+	}
+
+	public function scopeSearch($query, $search) {
+		return $query->where('title', 'like', "%{$search}%");
+	}
+
+	public function scopeFilter($query, array $filters) {
+		$query->when($filters['search'] ?? false, function ($query, $search) {
+			return $query->search($search);
+		});
+	}
+
+
+	public static function boot() {
+		parent::boot();
+
+		static::creating(function (Post $post) {
+			$post->user_id = auth()->id();
+			$post->published_at = now();
+		});
+
+		static::updating(function (Post $post) {
+			$post->user_id = auth()->id();
+//			$post->published_at = now();
+		});
+
+		static::deleting(function (Post $post) {
+			$post->tags()->detach();
+		});
+	}
+
+
+}

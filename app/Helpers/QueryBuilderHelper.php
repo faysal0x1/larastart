@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Helpers;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+
+class QueryBuilderHelper
+{
+	public static function apply(Request $request, Builder $query, array $searchable = [], array $sortable = []) {
+		if ($search = $request->input('search')) {
+			$query->where(function ($q) use ($search, $searchable) {
+				foreach ($searchable as $field) {
+					$q->orWhere($field, 'like', "%{$search}%");
+				}
+			});
+		}
+
+		$sortColumn = $request->input('sort_column', 'created_at');
+		$sortDirection = $request->input('sort_direction', 'desc');
+
+		if (in_array($sortColumn, $sortable)) {
+			$query->orderBy($sortColumn, $sortDirection);
+		}
+
+		return $query;
+	}
+
+	public static function paginate(Request $request, Builder $query) {
+		$perPage = $request->input('per_page', 10);
+		return $query->paginate($perPage)->withQueryString();
+	}
+
+	public static function filters(Request $request) {
+		return $request->only([
+			'search',
+			'sort_column',
+			'sort_direction',
+			'per_page'
+		]);
+	}
+}

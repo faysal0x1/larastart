@@ -1,0 +1,33 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Post;
+use App\Models\Tag;
+use Carbon\Carbon;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class PostTagSeeder extends Seeder
+{
+	/**
+	 * Run the database seeds.
+	 */
+	public function run(): void {
+		$posts = Post::get();
+		$tags = Tag::all();
+
+		foreach ($posts as $post) {
+			// Attach 1-4 random tags to each post
+			$randomTags = $tags->random(rand(1, 4));
+			foreach ($randomTags as $tag) {
+				DB::table('post_tag')->insert([
+					'post_id' => $post->id,
+					'tag_id' => $tag->id,
+					'created_at' => Carbon::now(),
+					'updated_at' => Carbon::now(),
+				]);
+			}
+		}
+	}
+}
