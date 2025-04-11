@@ -2,48 +2,14 @@
 import ExportDropdown from '@/components/ExportDropdown.jsx';
 import PaginationComponent from '@/components/PaginationComponent.jsx';
 import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import {
-    flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable
-} from '@tanstack/react-table';
+import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import { ChevronDown, Search, SlidersHorizontal } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-/**
- * Enhanced DataTable component with advanced features
- *
- * @param {Array} data - The data to display in the table
- * @param {Array} columns - The columns configuration
- * @param {number} totalItems - Total number of items (for server-side pagination)
- * @param {string} searchPlaceholder - Placeholder text for the search input
- * @param {number} initialPageSize - Initial number of items per page
- * @param {Array} pageSizeOptions - Options for items per page
- * @param {Function} onPageChange - Callback when page changes (for server-side pagination)
- * @param {number} currentPage - Current page index (for server-side pagination, 0-based)
- * @param {Function} onSearch - Callback when search term changes (for server-side filtering)
- * @param {string} searchValue - Search value (for server-side filtering)
- * @param {Function} onPageSizeChange - Callback when page size changes
- * @param {Function} onSortChange - Callback when sorting changes
- * @param {string} sortColumn - Current sort column name
- * @param {string} sortDirection - Current sort direction ('asc' or 'desc')
- * @param {Function} onExport - Optional callback for exporting data
- * @param {boolean} showColumnToggle - Whether to show column visibility toggle
- * @param {string} title - Optional table title
- * @param {ReactNode} actions - Optional actions to display in the header
- */
 export default function DataTable({
     data,
     columns,
@@ -64,12 +30,10 @@ export default function DataTable({
     title,
     actions,
 }) {
-    // State for search input and pagination
     const [globalFilter, setGlobalFilter] = useState(searchValue);
     const [pageSize, setPageSize] = useState(initialPageSize);
     const [sorting, setSorting] = useState([{ id: sortColumn, desc: sortDirection === 'desc' }]);
 
-    // Update local state when props change
     useEffect(() => {
         setGlobalFilter(searchValue);
     }, [searchValue]);
@@ -82,10 +46,8 @@ export default function DataTable({
         setSorting([{ id: sortColumn, desc: sortDirection === 'desc' }]);
     }, [sortColumn, sortDirection]);
 
-    // Determine if we're using server-side processing
     const isServerSide = !!onPageChange;
 
-    // Handle sort change
     const handleSortingChange = (updatedSorting) => {
         setSorting(updatedSorting);
 
@@ -95,7 +57,6 @@ export default function DataTable({
         }
     };
 
-    // Initialize the table with TanStack React Table
     const table = useReactTable({
         data: data || [],
         columns,
@@ -122,7 +83,6 @@ export default function DataTable({
         onSortingChange: handleSortingChange,
     });
 
-    // Calculate visible range for items display
     const pageIndex = table.getState().pagination.pageIndex || 0;
     const currentPageSize = table.getState().pagination.pageSize || pageSize;
     const totalCount = typeof totalItems === 'number' ? totalItems : data?.length || 0;
@@ -132,7 +92,6 @@ export default function DataTable({
 
     const showPagination = totalCount > 0;
 
-    // Handle page change
     const handlePageChange = (newPage) => {
         if (isServerSide) {
             onPageChange(newPage);
@@ -141,7 +100,6 @@ export default function DataTable({
         }
     };
 
-    // Handle search change
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setGlobalFilter(value);
@@ -150,7 +108,6 @@ export default function DataTable({
         }
     };
 
-    // Handle page size change
     const handlePageSizeChange = (value) => {
         const newSize = Number(value);
         setPageSize(newSize);
@@ -161,12 +118,10 @@ export default function DataTable({
         }
     };
 
-    // Handle data export
     const handleExport = () => {
         if (onExport) {
             onExport(data);
         } else {
-            // Default CSV export implementation
             const headers = columns
                 .filter((col) => col.accessorKey && col.header)
                 .map((col) => (typeof col.header === 'string' ? col.header : col.accessorKey));
@@ -197,34 +152,40 @@ export default function DataTable({
 
     return (
         <div className="space-y-4">
-            {/* Table Header with Search, Actions, and Column Visibility */}
+            {/* Table Header */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-1 items-center gap-2">
-                    {title && <h2 className="text-lg font-semibold">{title}</h2>}
+                    {title && <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h2>}
 
-                    {/* Search Input */}
                     <div className="relative max-w-md flex-1">
-                        <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500" />
-                        <Input placeholder={searchPlaceholder} value={globalFilter ?? ''} onChange={handleSearchChange} className="pl-8" />
+                        <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                        <Input
+                            placeholder={searchPlaceholder}
+                            value={globalFilter ?? ''}
+                            onChange={handleSearchChange}
+                            className="border-gray-300 bg-white pl-8 text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                        />
                     </div>
                 </div>
 
-                {/* Actions Area */}
                 <div className="flex items-center gap-2">
                     {actions}
 
                     <ExportDropdown onExport={onExport} data={data} allData={totalItems > data.length ? null : data} />
 
-                    {/*Column Visibility Toggle */}
                     {showColumnToggle && columns.length > 0 && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="flex items-center gap-1 border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                                >
                                     <SlidersHorizontal className="h-4 w-4" />
                                     Columns
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuContent align="end" className="w-48 border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800">
                                 {table
                                     .getAllColumns()
                                     .filter((column) => column.getCanHide())
@@ -232,7 +193,7 @@ export default function DataTable({
                                         return (
                                             <DropdownMenuCheckboxItem
                                                 key={column.id}
-                                                className="capitalize"
+                                                className="text-gray-700 capitalize hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                                                 checked={column.getIsVisible()}
                                                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
                                             >
@@ -252,31 +213,34 @@ export default function DataTable({
 
             {/* Page Size Selector */}
             <div className="flex items-center justify-end gap-2">
-                <span className="text-sm text-gray-500">Show</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Show</span>
                 <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
-                    <SelectTrigger className="w-[80px]">
+                    <SelectTrigger className="w-[80px] border-gray-300 bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
                         <SelectValue placeholder={pageSize} />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800">
                         {pageSizeOptions.map((size) => (
-                            <SelectItem key={size} value={String(size)}>
+                            <SelectItem
+                                key={size}
+                                value={String(size)}
+                                className="text-gray-900 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
+                            >
                                 {size}
                             </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
-                <span className="text-sm text-gray-500">per page</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">per page</span>
             </div>
 
             {/* Main Table */}
-            <div className="rounded-md border">
+            <div className="rounded-md border border-gray-300 dark:border-gray-600">
                 <Table>
-                    {/* Table Header */}
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
+                            <TableRow key={headerGroup.id} className="bg-gray-50 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
+                                    <TableHead key={header.id} className="text-gray-900 dark:text-gray-100">
                                         {header.isPlaceholder ? null : (
                                             <div className="flex items-center">
                                                 {header.column.getCanSort() ? (
@@ -284,7 +248,7 @@ export default function DataTable({
                                                         onClick={() => {
                                                             header.column.toggleSorting(header.column.getIsSorted() === 'asc');
                                                         }}
-                                                        className="flex cursor-pointer items-center hover:text-gray-700"
+                                                        className="flex cursor-pointer items-center hover:text-gray-700 dark:hover:text-gray-300"
                                                     >
                                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                                         <ChevronDown
@@ -308,19 +272,23 @@ export default function DataTable({
                         ))}
                     </TableHeader>
 
-                    {/* Table Body */}
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} className="hover:bg-gray-50">
+                                <TableRow
+                                    key={row.id}
+                                    className="border-gray-300 bg-white hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
+                                >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                                        <TableCell key={cell.id} className="text-gray-900 dark:text-gray-100">
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
                                     ))}
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                <TableCell colSpan={columns.length} className="h-24 text-center text-gray-900 dark:text-gray-100">
                                     No results found.
                                 </TableCell>
                             </TableRow>

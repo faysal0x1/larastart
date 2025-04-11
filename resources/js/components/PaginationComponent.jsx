@@ -7,9 +7,31 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
+import { router, usePage } from '@inertiajs/react';
 
-const PaginationComponent = ({ pageIndex, totalCount, startIndex, endIndex, showPagination, handlePageChange, getPageCount }) => {
+export const PaginationComponent = ({ pageIndex, totalCount, startIndex, endIndex, showPagination, getPageCount }) => {
+    const { url } = usePage();
     const pageCount = getPageCount();
+
+    const handlePageChange = (newPageIndex) => {
+        if (newPageIndex < 0 || newPageIndex >= pageCount) return;
+
+        // Important: Use only the base URL without query string
+        router.post(
+            url,
+            {
+                page: newPageIndex + 1,
+                _method: 'GET', // This makes it a GET request despite using POST
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+                onBefore: () => true,
+                onSuccess: () => {},
+            },
+        );
+    };
 
     const getDisplayedPageNumbers = () => {
         const maxButtons = 5;

@@ -1,23 +1,33 @@
 import {
     Pagination,
     PaginationContent,
+    PaginationEllipsis,
     PaginationItem,
     PaginationLink,
-    PaginationPrevious,
     PaginationNext,
-    PaginationEllipsis,
-} from '@/components/ui/pagination';
+    PaginationPrevious,
+} from "@/components/ui/pagination";
+import { router, usePage } from "@inertiajs/react";
 
-const PaginationComponent = ({
-                                 pageIndex,
-                                 totalCount,
-                                 startIndex,
-                                 endIndex,
-                                 showPagination,
-                                 handlePageChange,
-                                 getPageCount,
-                             }) => {
+export const PaginationComponent = ({ pageIndex, totalCount, startIndex, endIndex, showPagination, getPageCount }) => {
+    const { url } = usePage();
     const pageCount = getPageCount();
+
+    const handlePageChange = (newPageIndex) => {
+        if (newPageIndex < 0 || newPageIndex >= pageCount) return;
+
+        // Important: Use only the base URL without query string
+        router.post(url, {
+            page: newPageIndex + 1,
+            _method: 'GET' // This makes it a GET request despite using POST
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            onBefore: () => true,
+            onSuccess: () => {}
+        });
+    };
 
     const getDisplayedPageNumbers = () => {
         const maxButtons = 5;
@@ -29,9 +39,7 @@ const PaginationComponent = ({
     return (
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="text-sm text-gray-500">
-                {showPagination
-                    ? `Showing ${startIndex} to ${endIndex} of ${totalCount} items`
-                    : 'No items to display'}
+                {showPagination ? `Showing ${startIndex} to ${endIndex} of ${totalCount} items` : 'No items to display'}
             </div>
 
             {showPagination && (

@@ -1,0 +1,213 @@
+// resources/js/components/ListingPage.jsx
+import DataTable from '@/components/DataTable';
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import AppLayout from '@/layouts/app-layout';
+import { Head, Link, router } from '@inertiajs/react';
+import { MoreHorizontal, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { createActionsColumn, createColumn, createDateColumn, createTagsColumn } from '../utils/tableUtils';
+
+export default function ListingPage({
+    title,
+    data,
+    filters = {},
+    currentUser,
+    resourceName,
+    resourceRoute,
+    breadcrumbs,
+    extraColumns = [],
+    showTags = true,
+    customActionsRenderer,
+    canCreate = true,
+    createButtonText = 'New',
+}) {
+    // Convert plural to singular for route naming if not provided
+    const singularResourceName = resourceName.endsWith('s') ? resourceName.slice(0, -1) : resourceName;
+
+    // Determine route base - either use provided route or generate from resource name
+    const routeBase = resourceRoute || resourceName;
+
+    // Local state for search and pagination
+    const [searchTerm, setSearchTerm] = useState(filters.search || '');
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(filters.search || '');
+    const [pageSize, setPageSize] = useState(filters.per_page || 10);
+    const [sortColumn, setSortColumn] = useState(filters.sort_column || 'created_at');
+    const [sortDirection, setSortDirection] = useState(filters.sort_direction || 'desc');
+
+    // Handle search debounce
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchTerm(searchTerm);
+        }, 300);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [searchTerm]);
+
+    // Navigate when filters change
+    useEffect(() => {
+        if (
+            debouncedSearchTerm !== filters.search ||
+            pageSize !== filters.per_page ||
+            sortColumn !== filters.sort_column ||
+            sortDirection !== filters.sort_direction
+        ) {
+            navigateWithFilters({
+                search: debouncedSearchTerm,
+                per_page: pageSize,
+                sort_column: sortColumn,
+                sort_direction: sortDirection,
+                page: 1, // Reset to first page when filters change
+            });
+        }
+    }, [debouncedSearchTerm, pageSize, sortColumn, sortDirection]);
+
+    // Navigate using only the base URL for clean URLs
+    const navigateWithFilters = (updatedFilters) => {
+        router.post(
+            route(`${routeBase}.index`),
+            {
+                ...updatedFilters,
+                _method: 'GET', // This makes it a GET request despite using POST
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+                onBefore: () => true,
+                onSuccess: () => {},
+            },
+        );
+    };
+
+    // Handle page change
+    const handlePageChange = (pageIndex) => {
+        navigateWithFilters({
+            page: pageIndex + 1,
+            per_page: pageSize,
+            search: debouncedSearchTerm,
+            sort_column: sortColumn,
+            sort_direction: sortDirection,
+        });
+    };
+
+    // Handle sorting
+    const handleSortChange = (column, direction) => {
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
+
+    // Default actions dropdown for each row
+    const defaultRenderActions = (row) => {
+        const item = row.original;
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuSeparator className="dark:border-slate-700" />
+                    <DropdownMenuItem asChild>
+                        <Link href={route(`${routeBase}.show`, item.id)} className="w-full cursor-pointer">
+                            View
+                        </Link>
+                    </DropdownMenuItem>
+                    {currentUser && (currentUser.id === item.user_id || currentUser.is_admin) && (
+                        <>
+                            <DropdownMenuItem asChild>
+                                <Link href={route(`${routeBase}.edit`, item.id)} className="w-full cursor-pointer">
+                                    Edit
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-600 focus:text-red-600 dark:text-red-400" asChild>
+                                <Link
+                                    href={route(`${routeBase}.destroy`, item.id)}
+                                    method="delete"
+                                    as="button"
+                                    className="w-full cursor-pointer text-left"
+                                    data={{ _method: 'delete' }}
+                                >
+                                    Delete
+                                </Link>
+                            </DropdownMenuItem>
+                        </>
+                    )}
+                </DropdownMenuContent>
+            </DropdownMenu>
+        );
+    };
+
+    // Use custom actions renderer if provided, otherwise use default
+    const renderActions = customActionsRenderer || defaultRenderActions;
+
+    // Define default columns
+    const defaultColumns = [
+        createColumn('title', 'Title', (row) => (
+            <div className="font-medium">
+                <Link href={route(`${routeBase}.show`, row.original.id)} className="hover:underline">
+                    {row.original.title}
+                </Link>
+            </div>
+        )),
+    ];
+
+    // Add tags column if requested
+    if (showTags) {
+        defaultColumns.push(createTagsColumn('tags', 'Tags'));
+    }
+
+    // Add date column
+    defaultColumns.push(createDateColumn('created_at', 'Created'));
+
+    // Add any extra columns provided
+    const allColumns = [...defaultColumns, ...extraColumns, createActionsColumn(renderActions)];
+
+    // Create actions for the DataTable header
+    const tableActions = canCreate && currentUser && (
+        <Link href={route(`${routeBase}.create`)}>
+            <Button className="flex items-center gap-1 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700">
+                <Plus className="h-4 w-4" /> {createButtonText || `New ${singularResourceName}`}
+            </Button>
+        </Link>
+    );
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title={title} />
+            <div className="mx-6 max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <DataTable
+                    title={title}
+                    data={data.data}
+                    columns={allColumns}
+                    totalItems={data.total}
+                    searchPlaceholder={`Search ${resourceName.toLowerCase()}...`}
+                    initialPageSize={pageSize}
+                    pageSizeOptions={[5, 10, 25, 50, 100]}
+                    onPageChange={handlePageChange}
+                    currentPage={data.current_page - 1} // Convert 1-based to 0-based indexing
+                    onSearch={setSearchTerm}
+                    searchValue={searchTerm}
+                    onPageSizeChange={setPageSize}
+                    onSortChange={handleSortChange}
+                    sortColumn={sortColumn}
+                    sortDirection={sortDirection}
+                    actions={tableActions}
+                    className="dark:bg-slate-900 dark:text-white"
+                />
+            </div>
+        </AppLayout>
+    );
+}

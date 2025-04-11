@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\QueryBuilderHelper;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
@@ -10,44 +11,21 @@ use Inertia\Inertia;
 class PostController extends Controller
 {
 	public function index(Request $request) {
-		// Get the page size from the request, default to 10
-		$pageSize = $request->input('per_page', 10);
-
-		// Get current page (important for pagination)
-		$page = $request->input('page', 1);
-
-		// Get search term if provided
-		$search = $request->input('search', '');
-
-		// Get sort column and direction
-		$sortColumn = $request->input('sort_column', 'created_at');
-		$sortDirection = $request->input('sort_direction', 'desc');
-
-		// Build query
+		// Combine request methods to handle both GET and POST
 		$query = Post::with('tags');
 
-		// Apply search if provided
-		if ($search) {
-			$query->where(function ($q) use ($search) {
-				$q->where('title', 'like', "%{$search}%")
-					->orWhere('body', 'like', "%{$search}%");
-			});
-		}
+		// Make sure all parameters are correctly extracted from the request
+		$params = $request->isMethod('post') ? $request->all() : $request->query();
 
-		// Apply sorting
-		$query->orderBy($sortColumn, $sortDirection);
+		// Create a new request with the combined parameters
+		$combinedRequest = new Request($params);
 
-		// Get paginated results
-		$posts = $query->paginate($pageSize)->withQueryString();
+		$query = QueryBuilderHelper::apply($combinedRequest, $query, ['title', 'body'], ['title', 'created_at']);
+		$posts = QueryBuilderHelper::paginate($combinedRequest, $query);
 
 		return Inertia::render('Posts/Index', [
 			'posts' => $posts,
-			'filters' => [
-				'search' => $search,
-				'sort_column' => $sortColumn,
-				'sort_direction' => $sortDirection,
-				'per_page' => $pageSize
-			]
+			'filters' => QueryBuilderHelper::filters($combinedRequest),
 		]);
 	}
 

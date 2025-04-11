@@ -11,14 +11,19 @@ use Inertia\Inertia;
 class PostController extends Controller
 {
 	public function index(Request $request) {
+		// Combine request methods to handle both GET and POST
 		$query = Post::with('tags');
 
-		$query = QueryBuilderHelper::apply($request, $query, ['title', 'body'], ['title', 'created_at']);
-		$posts = QueryBuilderHelper::paginate($request, $query);
+		$params = $request->isMethod('post') ? $request->all() : $request->query();
+
+		$combinedRequest = new Request($params);
+
+		$query = QueryBuilderHelper::apply($combinedRequest, $query, ['title', 'body'], ['title', 'created_at']);
+		$posts = QueryBuilderHelper::paginate($combinedRequest, $query);
 
 		return Inertia::render('Posts/Index', [
 			'posts' => $posts,
-			'filters' => QueryBuilderHelper::filters($request),
+			'filters' => QueryBuilderHelper::filters($combinedRequest),
 		]);
 	}
 

@@ -17,21 +17,22 @@ export function createColumn(key, header, cellRenderer = null, canSort = true, a
     return {
         accessorKey: key,
         header: ({ column }) => {
-            // If header is a function, use it directly
             if (typeof header === 'function') {
                 return header({ column });
             }
 
-            // Otherwise create a standard sortable header if sorting is enabled
             if (canSort) {
                 return (
-                    <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className="p-0 hover:bg-transparent">
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                        className="p-0 hover:bg-transparent dark:hover:bg-transparent"
+                    >
                         {header}
                     </Button>
                 );
             }
 
-            // Non-sortable header
             return header;
         },
         cell: cellRenderer ? ({ row }) => cellRenderer(row) : undefined,
@@ -70,11 +71,11 @@ export function createDateColumn(key, header, dateFormat = 'MMM d, yyyy') {
         header,
         (row) => {
             const dateValue = row.original[key];
-            if (!dateValue) return '-';
+            if (!dateValue) return <span className="dark:text-gray-400">-</span>;
             try {
-                return format(new Date(dateValue), dateFormat);
+                return <span className="dark:text-gray-200">{format(new Date(dateValue), dateFormat)}</span>;
             } catch (e) {
-                return dateValue;
+                return <span className="dark:text-gray-200">{dateValue}</span>;
             }
         },
         true,
@@ -98,7 +99,10 @@ export function createStatusColumn(key, header, statusConfig = {}) {
             const config = statusConfig[status] || { color: 'gray', label: status };
 
             return (
-                <Badge variant="outline" className={`bg-${config.color}-50 text-${config.color}-700 border-${config.color}-200`}>
+                <Badge
+                    variant="outline"
+                    className={`bg-${config.color}-50 text-${config.color}-700 border-${config.color}-200 dark:bg-${config.color}-900 dark:text-${config.color}-200 dark:border-${config.color}-700`}
+                >
                     {config.label || status}
                 </Badge>
             );
@@ -123,11 +127,11 @@ export function createTagsColumn(key, header) {
             return (
                 <div className="flex flex-wrap gap-1">
                     {tags.map((tag) => (
-                        <Badge key={tag.id} variant="outline" className="bg-blue-50">
+                        <Badge key={tag.id} variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
                             {tag.name}
                         </Badge>
                     ))}
-                    {tags.length === 0 && <span className="text-sm text-gray-400">No tags</span>}
+                    {tags.length === 0 && <span className="text-sm text-gray-400 dark:text-gray-500">No tags</span>}
                 </div>
             );
         },
@@ -154,7 +158,7 @@ export function createBooleanColumn(key, header, booleanRenderer = null) {
                 return booleanRenderer(value, row);
             }
 
-            return value ? 'Yes' : 'No';
+            return <span className="dark:text-gray-200">{value ? 'Yes' : 'No'}</span>;
         },
         true,
     );
