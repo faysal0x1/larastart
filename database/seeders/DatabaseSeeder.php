@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
 	 * Seed the application's database.
 	 */
 	public function run(): void {
-		// User::factory(10)->create();
+		// user::factory(10)->create();
 
 
 		$this->call([
@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
 			TagSeeder::class,
 			PostSeeder::class,
 			PostTagSeeder::class,
+			CountrySeeder::class,
+
 		]);
 	}
 }

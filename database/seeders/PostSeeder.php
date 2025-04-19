@@ -13,8 +13,8 @@ class PostSeeder extends Seeder
 	 */
 	public function run(): void {
 		// Config
-		$totalPosts = 100000;
-		$chunkSize = 3000; // Smaller chunk size to reduce memory usage
+		$totalPosts = 1000;
+		$chunkSize = 300;
 
 		// Get user IDs directly from DB to avoid loading all user models
 		$userIds = DB::table('users')->pluck('id')->toArray();

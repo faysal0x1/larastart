@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MicroTaskCategory;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class FrontendController extends Controller
+{
+    public function index() {
+
+		$category = MicroTaskCategory::whereStatus(1)->get();
+
+		return Inertia::render('frontend/home');
+	}
+}

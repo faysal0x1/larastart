@@ -23,7 +23,7 @@ class PostTagSeeder extends Seeder
 		$tagCount = DB::table('tags')->count();
 
 		if ($postCount == 0 || $tagCount == 0) {
-			$this->command->error('Posts or tags not found. Please run PostSeeder and TagSeeder first.');
+			$this->command->error('posts or tags not found. Please run PostSeeder and TagSeeder first.');
 			return;
 		}
 

@@ -1,5 +1,7 @@
 // utils/tableUtils.js
 
+import { Button } from '@/components/ui/button.jsx';
+
 /**
  * Create a sortable column configuration with standardized behavior
  *
@@ -22,13 +24,9 @@ export function createColumn(key, header, cellRenderer = null, canSort = true, a
             // Otherwise create a standard sortable header if sorting is enabled
             if (canSort) {
                 return (
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                        className="p-0 hover:bg-transparent"
-                    >
+                    // <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className="p-0 hover:bg-transparent">
                         {header}
-                    </Button>
+                    // </Button>
                 );
             }
 
@@ -37,7 +35,7 @@ export function createColumn(key, header, cellRenderer = null, canSort = true, a
         },
         cell: cellRenderer ? ({ row }) => cellRenderer(row) : undefined,
         enableSorting: canSort,
-        ...additionalProps
+        ...additionalProps,
     };
 }
 
@@ -48,7 +46,7 @@ export function createColumn(key, header, cellRenderer = null, canSort = true, a
  * @param {string} header - Optional header text (defaults to "Actions")
  * @returns {Object} Column configuration object
  */
-export function createActionsColumn(actionsRenderer, header = "Actions") {
+export function createActionsColumn(actionsRenderer, header = 'Actions') {
     return {
         id: 'actions',
         header,
@@ -78,7 +76,7 @@ export function createDateColumn(key, header, dateFormat = 'MMM d, yyyy') {
                 return dateValue;
             }
         },
-        true
+        true,
     );
 }
 
@@ -104,7 +102,7 @@ export function createStatusColumn(key, header, statusConfig = {}) {
                 </Badge>
             );
         },
-        true
+        true,
     );
 }
 
@@ -132,7 +130,7 @@ export function createTagsColumn(key, header) {
                 </div>
             );
         },
-        false
+        false,
     );
 }
 
@@ -157,6 +155,6 @@ export function createBooleanColumn(key, header, booleanRenderer = null) {
 
             return value ? 'Yes' : 'No';
         },
-        true
+        true,
     );
 }

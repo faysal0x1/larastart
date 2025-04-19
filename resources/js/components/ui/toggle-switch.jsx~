@@ -1,0 +1,71 @@
+// resources/js/components/ui/toggle-switch.jsx
+import { useState } from 'react';
+import { Switch } from '@/components/ui/switch';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle
+} from '@/components/ui/alert-dialog';
+
+export const ToggleSwitch = ({
+                                 checked,
+                                 onChange,
+                                 disabled = false,
+                                 size = 'default',
+                                 confirmationMessage = 'Are you sure you want to change this status?',
+                                 successMessage = 'Status updated successfully',
+                                 errorMessage = 'Failed to update status'
+                             }) => {
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleClick = (e) => {
+        // e.preventDefault();
+        e.stopPropagation();
+
+        if (disabled || loading) return;
+
+        // Show confirmation dialog
+        setShowConfirmDialog(true);
+    };
+
+    const handleConfirm = () => {
+        setShowConfirmDialog(false);
+        onChange(!checked);
+    };
+
+    const handleCancel = () => {
+        setShowConfirmDialog(false);
+    };
+
+    return (
+        <>
+            <Switch
+                checked={checked}
+                onCheckedChange={handleClick}
+                disabled={disabled || loading}
+                className={size === 'small' ? 'h-5 w-9' : 'h-6 w-11'}
+            />
+
+            <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {confirmationMessage}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirm}>Yes, change it!</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
+    );
+};

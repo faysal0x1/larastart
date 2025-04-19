@@ -157,3 +157,15 @@
         @apply bg-background text-foreground;
     }
 }
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.bg-gradient {
+    background: linear-gradient(135deg, #4F46E5 0%, #10B981 100%);
+}
+
+.bg-primary {
+    background-color: var(--color-primary);
+}

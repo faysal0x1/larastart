@@ -14,15 +14,15 @@ class UserSeeder extends Seeder
 	 */
 	public function run(): void {
 		User::create([
-			'name' => 'Demo User',
+			'name' => 'Demo user',
+			'username' => 'demo',
 			'email' => 'admin@gmail.com',
 			'email_verified_at' => now(),
 			'password' => Hash::make('password'),
 			'remember_token' => Str::random(10),
 		]);
-		if (User::count() === 0) {
+
 			User::factory(10)->create();
-		}
 
 
 	}

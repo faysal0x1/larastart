@@ -1,0 +1,123 @@
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar.jsx';
+import { Link, usePage } from '@inertiajs/react';
+
+export function NavMain({ items = [] }) {
+    const page = usePage();
+    const currentFullUrl = page.url;
+
+    // Extract the base path without query parameters
+    const currentPath = currentFullUrl.split('?')[0];
+
+    const [expandedItems, setExpandedItems] = useState({});
+
+    // Helper function to check if a URL matches the current path
+    const isUrlActive = (itemUrl) => {
+        if (!itemUrl) return false;
+        const itemPath = itemUrl.split('?')[0];
+        return currentPath === itemPath || currentPath.startsWith(`${itemPath}/`);
+    };
+
+    // Helper function to check if an item or its subitems are active
+    const isItemActive = (item) => {
+        if (item.url && isUrlActive(item.url)) return true;
+
+        // Check subitems if they exist
+        if (item.subItems) {
+            return item.subItems.some((subItem) => subItem.url && isUrlActive(subItem.url));
+        }
+        return false;
+    };
+
+    // Auto-expand items that contain the active URL on initial load
+    useEffect(() => {
+        const newExpandedState = {};
+
+        items.forEach((item) => {
+            if (item.subItems && item.subItems.some((subItem) => subItem.url && isUrlActive(subItem.url))) {
+                newExpandedState[item.title] = true;
+            }
+        });
+
+        setExpandedItems((prev) => ({
+            ...prev,
+            ...newExpandedState,
+        }));
+    }, [currentPath, items]);
+
+    const toggleItem = (title) => {
+        setExpandedItems((prev) => ({
+            ...prev,
+            [title]: !prev[title],
+        }));
+    };
+
+    // More subtle and aesthetic highlighting
+    const activeClass = 'bg-secondary/20 text-foreground font-medium';
+
+    return (
+        <SidebarGroup className="px-2 py-0">
+            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarMenu>
+                {items.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                        {item.subItems ? (
+                            <>
+                                <SidebarMenuButton
+                                    onClick={() => toggleItem(item.title)}
+                                    className={`w-full justify-between rounded-md transition-all ${isItemActive(item) ? activeClass : ''}`}
+                                >
+                                    <div className="flex items-center">
+                                        {item.icon && (
+                                            <span className="text-inherit">
+                                                <item.icon className={`mr-2 h-4 w-4 ${isItemActive(item) ? 'text-secondary' : ''}`} />
+                                            </span>
+                                        )}
+                                        <span>{item.title}</span>
+                                    </div>
+                                    {expandedItems[item.title] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                                </SidebarMenuButton>
+
+                                {expandedItems[item.title] && (
+                                    <div className="mt-1 ml-6 space-y-1">
+                                        {item.subItems.map((subItem) => (
+                                            // Don't wrap in SidebarMenuItem to avoid nesting li elements
+                                            <SidebarMenuButton
+                                                key={subItem.title}
+                                                asChild
+                                                className={`w-full rounded-md transition-all ${isUrlActive(subItem.url) ? activeClass : ''}`}
+                                            >
+                                                <Link href={subItem.url} prefetch className="flex items-center">
+                                                    {subItem.icon && (
+                                                        <span className="text-inherit">
+                                                            <subItem.icon
+                                                                className={`mr-2 h-4 w-4 }`}
+                                                            />
+                                                        </span>
+                                                    )}
+                                                    <span className={${isUrlActive(subItem.url) ? 'text-secondary' : ''}}>{subItem.title}</span>
+                                                </Link>
+                                            </SidebarMenuButton>
+                                        ))}
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <SidebarMenuButton asChild className={`rounded-md transition-all ${isUrlActive(item.url) ? activeClass : ''}`}>
+                                <Link href={item.url} prefetch className="flex items-center">
+                                    {item.icon && (
+                                        <span className="mr-2 inline-flex bg-red-100">
+                                            <item.icon className={`h-4 w-4`} />
+                                        </span>
+                                    )}
+                                    <span className={${isUrlActive(subItem.url) ? 'text-secondary' : ''}}>{item.title}</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        )}
+                    </SidebarMenuItem>
+                ))}
+            </SidebarMenu>
+        </SidebarGroup>
+    );
+}

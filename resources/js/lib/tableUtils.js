@@ -1,4 +1,4 @@
-// utils/tableUtils.js
+// utils/tableUtils.jsx
 
 import { Button } from '@/components/ui/button.jsx';
 

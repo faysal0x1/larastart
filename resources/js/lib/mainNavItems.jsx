@@ -1,0 +1,53 @@
+import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+
+export const mainNavItems = [
+    {
+        title: 'Dashboard',
+        url: '/dashboard',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Posts',
+        url: '/posts',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Users',
+        icon: LayoutGrid,
+        subItems: [
+            {
+                title: 'All Users',
+                url: '/users',
+                icon: LayoutGrid,
+            },
+            {
+                title: 'Freelancers',
+                url: '/freelancers',
+                icon: LayoutGrid,
+            },
+            {
+                title: 'employer',
+                url: '/employers',
+                icon: LayoutGrid,
+            },
+        ],
+    },
+    {
+        title: 'Micro Task Categories',
+        url: '/micro-task-categories',
+        icon: LayoutGrid,
+    },
+];
+
+export const footerNavItems = [
+    {
+        title: 'Repository',
+        url: 'https://github.com/laravel/react-starter-kit',
+        icon: Folder,
+    },
+    {
+        title: 'Documentation',
+        url: 'https://laravel.com/docs/starter-kits',
+        icon: BookOpen,
+    },
+];

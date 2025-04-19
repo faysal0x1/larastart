@@ -1,0 +1,71 @@
+// resources/js/Pages/posts/index.jsx
+import ListingPage from '@/components/ListingPage';
+import { column, createSerialColumn, createToggleColumn, linkColumn } from '@/utils/tableUtils';
+import { usePage } from '@inertiajs/react';
+import ActionsDropdown from '@/components/ActionsDropdown';
+
+export default function Freelancers() {
+    const { users, filters = {}, auth } = usePage().props;
+
+    const breadcrumbs = [
+        {
+            title: 'Users',
+            href: '/users',
+        },
+    ];
+
+    // Define custom actions renderer
+    const columns = [
+        createSerialColumn('Serial'),
+        //
+
+        linkColumn('name', 'Name', 'freelancers.show', 'id', {
+            className: 'text-blue-600 hover:underline',
+            linkWrapper: 'font-semibold',
+            textAccessor: (item) => `${item.name} (${item.username})`,
+        }),
+
+        column('username', 'Username', (item) => <div className="font-medium">{item.username}</div>),
+
+        column('email', 'Email'),
+        column('role', 'Role'),
+
+        column('created_at', 'Created', (item) => <span>{new Date(item.created_at).toLocaleDateString()}</span>),
+        createToggleColumn('is_banned', 'Banned', 'status.update', {
+            confirmMessage: 'Are you sure you want to change the ban status for this user?',
+            successMessage: 'user ban status updated successfully',
+            errorMessage: 'Failed to update user ban status',
+            modelType: 'user',
+        }),
+
+        // Integer toggle column for status
+        // createStatusToggleColumn('status', 'Active', 'users.update', 1, 0, {
+        //     confirmMessage: 'Are you sure you want to change the active status for this user?',
+        //     successMessage: 'user status updated successfully',
+        //     errorMessage: 'Failed to update user status',
+        // }),
+        column('actions', 'Actions', (item) => (
+            <ActionsDropdown
+                item={item}
+                routes={{
+                    view: (id) => route('users.show', id),
+                    edit: (id) => route('users.edit', id),
+                    delete: (id) => route('users.destroy', id),
+                }}
+            />
+        )),
+    ];
+
+    return (
+        <ListingPage
+            title="Users"
+            data={users}
+            filters={filters}
+            currentUser={auth.user}
+            resourceName="freelancers"
+            breadcrumbs={breadcrumbs}
+            columns={columns}
+            createButtonText="New Users"
+        />
+    );
+}

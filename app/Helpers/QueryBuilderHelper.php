@@ -27,7 +27,12 @@ class QueryBuilderHelper
 	}
 
 	public static function paginate(Request $request, Builder $query) {
-		$perPage = $request->input('per_page', 10);
+		$perPage = (int)$request->input('per_page', 10);
+
+		if ($perPage < 1) {
+			$perPage = 10;
+		}
+
 		return $query->paginate($perPage)->withQueryString();
 	}
 
@@ -36,7 +41,8 @@ class QueryBuilderHelper
 			'search',
 			'sort_column',
 			'sort_direction',
-			'per_page'
+			'per_page',
+			'page'
 		]);
 	}
 }

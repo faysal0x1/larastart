@@ -1,5 +1,4 @@
 {
-  // <reference path="components.json" />
   "$schema": "https://ui.shadcn.com/schema.json",
   "style": "default",
   "rsc": false,

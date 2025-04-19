@@ -14,23 +14,21 @@ class PostController extends Controller
 		// Combine request methods to handle both GET and POST
 		$query = Post::with('tags');
 
-		// Make sure all parameters are correctly extracted from the request
 		$params = $request->isMethod('post') ? $request->all() : $request->query();
 
-		// Create a new request with the combined parameters
 		$combinedRequest = new Request($params);
 
 		$query = QueryBuilderHelper::apply($combinedRequest, $query, ['title', 'body'], ['title', 'created_at']);
 		$posts = QueryBuilderHelper::paginate($combinedRequest, $query);
 
-		return Inertia::render('Posts/Index', [
+		return Inertia::render('posts/Index', [
 			'posts' => $posts,
 			'filters' => QueryBuilderHelper::filters($combinedRequest),
 		]);
 	}
 
 	public function create() {
-		return Inertia::render('Posts/Create', [
+		return Inertia::render('posts/Create', [
 			'tags' => Tag::select('id', 'name')->get(),
 		]);
 	}

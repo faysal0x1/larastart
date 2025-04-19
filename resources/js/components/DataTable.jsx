@@ -1,4 +1,3 @@
-// resources/js/components/DataTable.jsx
 import ExportDropdown from '@/components/ExportDropdown.jsx';
 import PaginationComponent from '@/components/PaginationComponent.jsx';
 import { Button } from '@/components/ui/button';
@@ -11,31 +10,36 @@ import { ChevronDown, Search, SlidersHorizontal } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function DataTable({
-    data,
-    columns,
-    totalItems,
-    searchPlaceholder = 'Search...',
-    initialPageSize = 10,
-    pageSizeOptions = [5, 10, 25, 50, 100],
-    onPageChange,
-    currentPage = 0,
-    onSearch,
-    searchValue = '',
-    onPageSizeChange,
-    onSortChange,
-    sortColumn = 'created_at',
-    sortDirection = 'desc',
-    onExport,
-    showColumnToggle = true,
-    title,
-    actions,
-}) {
+                                      data,
+                                      columns,
+                                      totalItems,
+                                      searchPlaceholder = 'Search...',
+                                      initialPageSize = 10,
+                                      pageSizeOptions = [5, 10, 25, 50, 100],
+                                      onPageChange,
+                                      currentPage = 0,
+                                      onSearch,
+                                      searchValue = '',
+                                      onPageSizeChange,
+                                      onSortChange,
+                                      sortColumn = 'created_at',
+                                      sortDirection = 'desc',
+                                      onExport,
+                                      showColumnToggle = true,
+                                      title,
+                                      actions,
+                                      columnVisibility = {},
+                                      onColumnVisibilityChange,
+                                  }) {
     const [globalFilter, setGlobalFilter] = useState(searchValue);
     const [pageSize, setPageSize] = useState(initialPageSize);
     const [sorting, setSorting] = useState([{ id: sortColumn, desc: sortDirection === 'desc' }]);
+    const [localColumnVisibility, setLocalColumnVisibility] = useState(columnVisibility);
 
     useEffect(() => {
-        setGlobalFilter(searchValue);
+        if (searchValue !== globalFilter) {
+            setGlobalFilter(searchValue);
+        }
     }, [searchValue]);
 
     useEffect(() => {
@@ -46,14 +50,26 @@ export default function DataTable({
         setSorting([{ id: sortColumn, desc: sortDirection === 'desc' }]);
     }, [sortColumn, sortDirection]);
 
+    useEffect(() => {
+        setLocalColumnVisibility(columnVisibility);
+    }, [columnVisibility]);
+
     const isServerSide = !!onPageChange;
 
     const handleSortingChange = (updatedSorting) => {
-        setSorting(updatedSorting);
+        const newSorting = updatedSorting.length > 0 ? updatedSorting : [{ id: sortColumn, desc: sortDirection === 'desc' }];
+        setSorting(newSorting);
 
-        if (isServerSide && onSortChange && updatedSorting.length > 0) {
-            const { id, desc } = updatedSorting[0];
+        if (isServerSide && onSortChange) {
+            const { id, desc } = newSorting[0];
             onSortChange(id, desc ? 'desc' : 'asc');
+        }
+    };
+
+    const handleColumnVisibilityChange = (updatedVisibility) => {
+        setLocalColumnVisibility(updatedVisibility);
+        if (onColumnVisibilityChange) {
+            onColumnVisibilityChange(updatedVisibility);
         }
     };
 
@@ -67,7 +83,7 @@ export default function DataTable({
                 pageIndex: isServerSide ? currentPage : 0,
             },
             sorting,
-            columnVisibility: {},
+            columnVisibility: localColumnVisibility,
         },
         enableColumnResizing: true,
         enableMultiSort: false,
@@ -81,6 +97,7 @@ export default function DataTable({
         manualFiltering: isServerSide,
         pageCount: isServerSide ? Math.ceil(totalItems / pageSize) : undefined,
         onSortingChange: handleSortingChange,
+        onColumnVisibilityChange: handleColumnVisibilityChange,
     });
 
     const pageIndex = table.getState().pagination.pageIndex || 0;
@@ -115,38 +132,11 @@ export default function DataTable({
 
         if (onPageSizeChange) {
             onPageSizeChange(newSize);
-        }
-    };
 
-    const handleExport = () => {
-        if (onExport) {
-            onExport(data);
-        } else {
-            const headers = columns
-                .filter((col) => col.accessorKey && col.header)
-                .map((col) => (typeof col.header === 'string' ? col.header : col.accessorKey));
-
-            const csvContent = [
-                headers.join(','),
-                ...data.map((row) =>
-                    columns
-                        .filter((col) => col.accessorKey)
-                        .map((col) => {
-                            const value = row[col.accessorKey];
-                            return typeof value === 'string' ? `"${value.replace(/"/g, '""')}"` : value;
-                        })
-                        .join(','),
-                ),
-            ].join('\n');
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.setAttribute('href', url);
-            link.setAttribute('download', `export-${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Reset to page 1 when changing page size for server-side
+            if (isServerSide) {
+                handlePageChange(0); // This will use onPageChange to navigate to first page
+            }
         }
     };
 
@@ -200,8 +190,8 @@ export default function DataTable({
                                                 {column.id === 'actions'
                                                     ? 'Actions'
                                                     : typeof column.columnDef.header === 'string'
-                                                      ? column.columnDef.header
-                                                      : column.id}
+                                                        ? column.columnDef.header
+                                                        : column.id}
                                             </DropdownMenuCheckboxItem>
                                         );
                                     })}
@@ -238,7 +228,7 @@ export default function DataTable({
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id} className="bg-gray-50 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                            <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
                                     <TableHead key={header.id} className="text-gray-900 dark:text-gray-100">
                                         {header.isPlaceholder ? null : (
@@ -246,18 +236,37 @@ export default function DataTable({
                                                 {header.column.getCanSort() ? (
                                                     <div
                                                         onClick={() => {
-                                                            header.column.toggleSorting(header.column.getIsSorted() === 'asc');
+                                                            // Get current sort state
+                                                            const currentSort = header.column.getIsSorted();
+
+                                                            // If this is the only sorted column and we're clicking it again,
+                                                            // toggle between asc/desc instead of clearing
+                                                            if (sorting.length === 1 && sorting[0].id === header.column.id) {
+                                                                header.column.toggleSorting(currentSort === 'asc');
+                                                            } else {
+                                                                // Clear all other sorts and set this one
+                                                                table.setSorting([{ id: header.column.id, desc: currentSort === 'asc' }]);
+                                                            }
+
+                                                            // If server-side sorting is enabled, call the parent handler
+                                                            if (onSortChange) {
+                                                                const newDirection = currentSort === 'asc' ? 'desc' : 'asc';
+                                                                onSortChange(header.column.id, newDirection);
+                                                            }
                                                         }}
                                                         className="flex cursor-pointer items-center hover:text-gray-700 dark:hover:text-gray-300"
                                                     >
-                                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                                        {flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )}
                                                         <ChevronDown
                                                             className={`ml-1 h-4 w-4 transition-transform ${
                                                                 header.column.getIsSorted() === 'desc'
                                                                     ? 'rotate-180'
                                                                     : header.column.getIsSorted() === 'asc'
-                                                                      ? ''
-                                                                      : 'rotate-0 opacity-0'
+                                                                        ? ''
+                                                                        : 'rotate-0 opacity-0'
                                                             }`}
                                                         />
                                                     </div>

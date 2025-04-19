@@ -21,14 +21,14 @@ class PostController extends Controller
 		$query = QueryBuilderHelper::apply($combinedRequest, $query, ['title', 'body'], ['title', 'created_at']);
 		$posts = QueryBuilderHelper::paginate($combinedRequest, $query);
 
-		return Inertia::render('Posts/Index', [
+		return Inertia::render('posts/index', [
 			'posts' => $posts,
 			'filters' => QueryBuilderHelper::filters($combinedRequest),
 		]);
 	}
 
 	public function create() {
-		return Inertia::render('Posts/Create', [
+		return Inertia::render('posts/create', [
 			'tags' => Tag::select('id', 'name')->get(),
 		]);
 	}
