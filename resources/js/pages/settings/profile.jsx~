@@ -1,0 +1,355 @@
+import { Transition } from '@headlessui/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
+import { useEffect, useRef, useState } from 'react';
+import SettingsLayout from '@/layouts/settings/layout.jsx';
+import AppLayout from '@/layouts/app-layout.jsx';
+
+export default function ProfileSettings({ mustVerifyEmail, status }) {
+    const breadcrumbs = [
+        {
+            title: 'Profile settings',
+            href: '/settings/profile',
+        },
+    ];
+    const { auth } = usePage().props;
+    const photoInput = useRef(null);
+    const [photoPreview, setPhotoPreview] = useState(null);
+    const [debugInfo, setDebugInfo] = useState(null);
+
+    const { data, setData, post, errors, processing, recentlySuccessful, reset } = useForm({
+        _method: 'patch',
+        name: auth.user.name,
+        email: auth.user.email,
+        phone: auth.user.phone || '',
+        photo: null,
+    });
+
+    // Debug function to log form data
+    const logFormData = (formData) => {
+        console.log('Form data being sent:', {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            photo: formData.get('photo'),
+            _method: formData.get('_method'),
+        });
+    };
+
+    const submit = (e) => {
+        const formData = new FormData();
+        formData.append('_method', 'PATCH');
+        formData.append('name', data.name);
+        formData.append('email', data.email);
+        formData.append('phone', data.phone);
+        if (data.photo) formData.append('photo', data.photo);
+
+        post(route('profile.update'), {
+            data: formData,
+            preserveScroll: true,
+            forceFormData: true, // This is crucial for file uploads
+            onSuccess: () => {
+                if (photoInput.current) {
+                    photoInput.current.value = '';
+                }
+                setPhotoPreview(null);
+            },
+        });
+    };
+
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        console.log('Photo selected:', file.name, file.type, file.size);
+
+        // Create a preview URL for the file
+        setPhotoPreview(URL.createObjectURL(file));
+        setData('photo', file);
+    };
+
+    // Clear photo preview URL when component unmounts to prevent memory leaks
+    useEffect(() => {
+        return () => {
+            if (photoPreview) {
+                URL.revokeObjectURL(photoPreview);
+            }
+        };
+    }, [photoPreview]);
+
+    useEffect(() => {
+        console.log('Component mounted with auth data:', {
+            user: auth.user,
+            csrf: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        });
+    }, []);
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <meta name="csrf-token" content="{{ csrf_token() }}" />
+            <Head title="Profile settings" />
+            <SettingsLayout>
+                <div className="min-h-screen bg-gray-50">
+                    <div className="py-12">
+                        <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                            {/* Debug Info Display */}
+                            {debugInfo && (
+                                <div className="mb-4 rounded-md bg-blue-50 p-4">
+                                    <div className="flex">
+                                        <div className="ml-3">
+                                            <h3 className="text-sm font-medium text-blue-800">Debug Information</h3>
+                                            <div className="mt-2 text-sm text-blue-700">
+                                                <p>Form Fields: {debugInfo.formDataKeys.join(', ')}</p>
+                                                <p>Photo Included: {debugInfo.photoExists ? 'Yes' : 'No'}</p>
+                                                <p>Photo Type: {debugInfo.photoType}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {status === 'profile-updated' && (
+                                <div className="mb-4 rounded-md bg-green-50 p-4">
+                                    <div className="flex">
+                                        <div className="flex-shrink-0">
+                                            <svg
+                                                className="h-5 w-5 text-green-400"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div className="ml-3">
+                                            <p className="text-sm font-medium text-green-800">Your profile has been updated successfully.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Display any Inertia errors as a general error */}
+                            {Object.keys(errors).length > 0 && (
+                                <div className="mb-4 rounded-md bg-red-50 p-4">
+                                    <div className="flex">
+                                        <div className="flex-shrink-0">
+                                            <svg
+                                                className="h-5 w-5 text-red-400"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div className="ml-3">
+                                            <h3 className="text-sm font-medium text-red-800">There were errors with your submission</h3>
+                                            <div className="mt-2 text-sm text-red-700">
+                                                <ul className="list-disc space-y-1 pl-5">
+                                                    {Object.entries(errors).map(([field, message]) => (
+                                                        <li key={field}>{`${field}: ${message}`}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="rounded-lg bg-white shadow">
+                                <div className="border-b border-gray-200 px-4 py-5 sm:px-6">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900">Profile Information</h3>
+                                    <p className="mt-1 text-sm text-gray-500">Update your account's profile information and email address.</p>
+                                </div>
+
+                                <div className="px-4 py-5 sm:p-6">
+                                    <form onSubmit={submit} className="space-y-6" encType="multipart/form-data">
+                                        {/* Profile Photo Section */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">Profile photo</label>
+                                            <div className="mt-2 flex items-center">
+                                                <span className="inline-block h-16 w-16 overflow-hidden rounded-full bg-gray-100">
+                                                    {photoPreview ? (
+                                                        <img src={photoPreview} alt="New profile" className="h-full w-full object-cover" />
+                                                    ) : auth.user.profile_photo_path ? (
+                                                        <img
+                                                            src={`/storage/${auth.user.profile_photo_path}`}
+                                                            alt="Current profile"
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                        </svg>
+                                                    )}
+                                                </span>
+                                                <div className="ml-5 flex">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => photoInput.current.click()}
+                                                        className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-4 font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
+                                                    >
+                                                        Change
+                                                    </button>
+                                                    {photoPreview && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setPhotoPreview(null);
+                                                                setData('photo', null);
+                                                                if (photoInput.current) {
+                                                                    photoInput.current.value = '';
+                                                                }
+                                                            }}
+                                                            className="ml-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-4 font-medium text-red-600 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                <input
+                                                    ref={photoInput}
+                                                    type="file"
+                                                    name="photo"
+                                                    className="hidden"
+                                                    onChange={handlePhotoChange}
+                                                    accept="image/*"
+                                                />
+                                            </div>
+                                            {errors.photo && <p className="mt-2 text-sm text-red-600">{errors.photo}</p>}
+                                            <p className="mt-2 text-xs text-gray-500">JPG, PNG, or GIF. Maximum size 2MB.</p>
+                                        </div>
+
+                                        {/* Name Field */}
+                                        <div>
+                                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                                                Full name
+                                            </label>
+                                            <div className="mt-1">
+                                                <input
+                                                    id="name"
+                                                    name="name"
+                                                    type="text"
+                                                    required
+                                                    value={data.name}
+                                                    onChange={(e) => setData('name', e.target.value)}
+                                                    className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
+                                                />
+                                            </div>
+                                            {errors.name && <p className="mt-2 text-sm text-red-600">{errors.name}</p>}
+                                        </div>
+
+                                        {/* Email Field */}
+                                        <div>
+                                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                                                Email address
+                                            </label>
+                                            <div className="mt-1">
+                                                <input
+                                                    id="email"
+                                                    name="email"
+                                                    type="email"
+                                                    autoComplete="email"
+                                                    required
+                                                    value={data.email}
+                                                    onChange={(e) => setData('email', e.target.value)}
+                                                    className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
+                                                />
+                                            </div>
+                                            {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email}</p>}
+                                        </div>
+
+                                        {/* Phone Field */}
+                                        <div>
+                                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                                                Phone number
+                                            </label>
+                                            <div className="mt-1">
+                                                <input
+                                                    id="phone"
+                                                    name="phone"
+                                                    type="tel"
+                                                    autoComplete="tel"
+                                                    value={data.phone}
+                                                    onChange={(e) => setData('phone', e.target.value)}
+                                                    className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
+                                                />
+                                            </div>
+                                            {errors.phone && <p className="mt-2 text-sm text-red-600">{errors.phone}</p>}
+                                        </div>
+
+                                        {/* Save Button */}
+                                        <div className="flex items-center justify-end">
+                                            <button
+                                                type="submit"
+                                                disabled={processing}
+                                                className={`inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none ${processing ? 'cursor-not-allowed opacity-75' : ''}`}
+                                            >
+                                                {processing ? 'Saving...' : 'Save Changes'}
+                                            </button>
+
+                                            <Transition
+                                                show={recentlySuccessful}
+                                                enter="transition ease-in-out duration-150"
+                                                enterFrom="opacity-0"
+                                                enterTo="opacity-100"
+                                                leave="transition ease-in-out duration-150"
+                                                leaveFrom="opacity-100"
+                                                leaveTo="opacity-0"
+                                            >
+                                                <div className="ml-3 inline-flex items-center">
+                                                    <svg
+                                                        className="h-5 w-5 text-green-500"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 20 20"
+                                                        fill="currentColor"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                    <span className="ml-2 text-sm font-medium text-green-700">Saved</span>
+                                                </div>
+                                            </Transition>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            {/* Delete Account Section */}
+                            <div className="mt-10 overflow-hidden rounded-lg bg-white shadow">
+                                <div className="border-b border-gray-200 px-4 py-5 sm:px-6">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900">Delete Account</h3>
+                                    <p className="mt-1 text-sm text-gray-500">Permanently delete your account.</p>
+                                </div>
+                                <div className="px-4 py-5 sm:p-6">
+                                    <p className="text-sm text-gray-500">
+                                        Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your
+                                        account, please download any data or information that you wish to retain.
+                                    </p>
+                                    <div className="mt-5">
+                                        <button
+                                            type="button"
+                                            className="inline-flex items-center justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 font-medium text-red-700 hover:bg-red-200 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none sm:text-sm"
+                                        >
+                                            Delete Account
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </SettingsLayout>
+        </AppLayout>
+    );
+}

@@ -1,0 +1,141 @@
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Bell } from 'lucide-react';
+import { useState } from 'react';
+
+const notificationData = [
+    {
+        id: 1,
+        text: 'Faysal Rahman reacted to your cover photo',
+        read: false,
+        time: '1m',
+        type: 'reaction',
+    },
+    {
+        id: 2,
+        text: 'Faysal Rahman reacted to your photo',
+        read: false,
+        time: '1m',
+        type: 'reaction',
+    },
+    {
+        id: 3,
+        text: 'Faysal Rahman reacted to your photo',
+        read: false,
+        time: '1m',
+        type: 'reaction',
+    },
+    {
+        id: 4,
+        text: 'Sarfaraz Khan, Mabiha Mila and 66 others reacted to your story',
+        read: false,
+        time: '53m',
+        type: 'reaction',
+    },
+    {
+        id: 5,
+        text: 'Khadiza Khatun Bithi posted a story recently',
+        read: true,
+        time: '10h',
+        type: 'story',
+    },
+    {
+        id: 6,
+        text: 'Jahan Liya added to her story',
+        read: true,
+        time: '18h',
+        type: 'story',
+    },
+];
+export function Notifications({ initialUnreadNotifications = 4 }) {
+    const [unreadNotifications, setUnreadNotifications] = useState(initialUnreadNotifications);
+    const [notifications, setNotifications] = useState(notificationData);
+
+    const markNotificationsAsRead = () => {
+        const updatedNotifications = notifications.map((n) => ({ ...n, read: true }));
+        setNotifications(updatedNotifications);
+        setUnreadNotifications(0);
+    };
+
+    // Group notifications by time (New/Earlier)
+    const newNotifications = notifications.filter((n) => !n.read || n.time.includes('m') || (n.time.includes('h') && parseInt(n.time) < 24));
+    const earlierNotifications = notifications.filter((n) => n.read && ((n.time.includes('h') && parseInt(n.time) >= 24) || n.time.includes('d')));
+
+    return (
+        <>
+            <DropdownMenu
+                onOpenChange={(open) => {
+                    if (open) markNotificationsAsRead();
+                }}
+            >
+                <DropdownMenuTrigger asChild>
+                    <div className="relative">
+                        <button className="rounded-full p-2 text-gray-500 hover:text-gray-700" aria-label="Notifications">
+                            <Bell className="h-5 w-5" />
+                            {unreadNotifications > 0 && <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>}
+                        </button>
+                    </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="max-h-[500px] w-screen overflow-y-auto p-0 sm:w-96">
+                    <DropdownMenuLabel className="flex items-center justify-between border-b bg-gray-50 px-4 py-3">
+                        <span className="font-semibold">Notifications</span>
+                        <span className="cursor-pointer text-sm text-blue-600">Mark all as read</span>
+                    </DropdownMenuLabel>
+
+                    <div className="border-b px-4 py-2">
+                        <div className="flex space-x-4">
+                            <span className="font-medium text-gray-900">All</span>
+                            <span className="font-medium text-blue-600">Unread</span>
+                        </div>
+                    </div>
+
+                    {/* New Notifications Section */}
+                    {newNotifications.length > 0 && (
+                        <>
+                            <div className="bg-gray-50 px-4 py-2">
+                                <span className="text-sm font-medium text-gray-500">New</span>
+                            </div>
+                            {newNotifications.map((notification) => (
+                                <DropdownMenuItem
+                                    key={notification.id}
+                                    className={`flex items-start px-4 py-3 ${!notification.read ? 'bg-blue-50' : ''}`}
+                                >
+                                    <div
+                                        className={`mt-1.5 mr-3 h-2 w-2 rounded-full ${!notification.read ? 'bg-blue-500' : 'bg-transparent'}`}
+                                    ></div>
+                                    <div className="flex-1">
+                                        <p className={`${!notification.read ? 'font-semibold' : 'font-normal'} text-gray-900`}>{notification.text}</p>
+                                        <p className="mt-1 text-xs text-gray-500">{notification.time}</p>
+                                    </div>
+                                </DropdownMenuItem>
+                            ))}
+                        </>
+                    )}
+
+                    {/* Earlier Notifications Section */}
+                    {earlierNotifications.length > 0 && (
+                        <>
+                            <div className="bg-gray-50 px-4 py-2">
+                                <span className="text-sm font-medium text-gray-500">Earlier</span>
+                            </div>
+                            {earlierNotifications.map((notification) => (
+                                <DropdownMenuItem key={notification.id} className="flex items-start px-4 py-3">
+                                    <div className="mt-1.5 mr-3 h-2 w-2 rounded-full bg-transparent"></div>
+                                    <div className="flex-1">
+                                        <p className="font-normal text-gray-900">{notification.text}</p>
+                                        <p className="mt-1 text-xs text-gray-500">{notification.time}</p>
+                                    </div>
+                                </DropdownMenuItem>
+                            ))}
+                        </>
+                    )}
+
+                    {notifications.length === 0 && <DropdownMenuItem className="px-4 py-3 text-gray-500">No notifications</DropdownMenuItem>}
+
+                    <div className="border-t px-4 py-2 text-center">
+                        <span className="cursor-pointer text-sm text-blue-600">See all notifications</span>
+                    </div>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </>
+    );
+}

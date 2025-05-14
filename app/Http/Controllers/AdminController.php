@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\RedirectResponse as RedirectResponseAlias;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use App\Models\Country;
 use App\Models\User;
-use App\Models\Employee;
-use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -18,24 +16,22 @@ class AdminController extends Controller
 	 */
 	protected $modelMap = [
 		'user' => User::class,
+		'country' => Country::class
 	];
 
 	protected array $validationRules = [
 		'users' => [
 			'is_banned' => 'boolean',
 			'status' => 'integer|in:0,1',
-			// Add more fields as needed
 		],
 		'employees' => [
 			'is_active' => 'boolean',
 			'status' => 'integer|in:0,1',
-			// Add more fields as needed
 		],
 		'products' => [
 			'is_active' => 'boolean',
 			'is_featured' => 'boolean',
 			'status' => 'integer|in:0,1,2,3',
-			// Add more fields as needed
 		],
 	];
 
@@ -53,7 +49,7 @@ class AdminController extends Controller
 	 * Find a model instance by its ID
 	 *
 	 * @param string $modelClass
-	 * @param int $id
+	 * @param int    $id
 	 * @return Model|null
 	 */
 	protected function findModel($modelClass, $id): ?Model {
@@ -74,33 +70,22 @@ class AdminController extends Controller
 		return array_intersect_key($modelRules, array_flip($fields));
 	}
 
-	/**
-	 * Generic update method for any model
-	 *
-	 * @param Request $request
-	 * @param string  $model The model name from the route
-	 * @param int     $id    The model ID from the route
-	 * @return RedirectResponseAlias
-	 */
-// In AdminController.php, modify the update method:
-
-	public function update(Request $request, string $model, int $id)
-	{
+	public function updateStatus(Request $request, string $model, $id): ?\Illuminate\Http\RedirectResponse {
 		// Get the model class
 		$modelClass = $this->getModelClass($model);
 		if (!$modelClass) {
-			return $this->errorResponse("Invalid model type: $model");
+			return error_response("Invalid model type: $model", 400);
 		}
 
 		// Find the model instance
 		$instance = $this->findModel($modelClass, $id);
 		if (!$instance) {
-			return $this->errorResponse("$model with ID $id not found");
+			return error_response("$model with ID $id not found", 404);
 		}
 
 		// Check permission
 		if (method_exists($instance, 'userCanUpdate') && !$instance->userCanUpdate(auth()->user())) {
-			return $this->errorResponse("You don't have permission to update this $model");
+			return error_response("You don't have permission to update this $model", 403);
 		}
 
 		// For standard Laravel authorization
@@ -108,7 +93,7 @@ class AdminController extends Controller
 			try {
 				$this->authorize('update', $instance);
 			} catch (\Exception $e) {
-				return $this->errorResponse($e->getMessage());
+				return error_response($e->getMessage(), 403);
 			}
 		}
 
@@ -123,40 +108,32 @@ class AdminController extends Controller
 			$validator = Validator::make($request->all(), $rules);
 
 			if ($validator->fails()) {
-				return $this->errorResponse($validator->errors()->first());
+				return error_response($validator->errors()->first());
 			}
 
 			// Use validated data for fields with rules
 			$validatedData = $validator->validated();
 		}
 
-		// Update the model with validated data
-		$instance->update($validatedData);
+		try {
+			// Update the model with validated data
+			$instance->update($validatedData);
 
-		// Generate a user-friendly message
-		$fieldNames = collect($fields)->map(function($field) {
-			return Str::title(str_replace('_', ' ', $field));
-		})->join(', ');
+			// Generate a user-friendly message
+			$fieldNames = collect($fields)->map(function ($field) {
+				return Str::title(str_replace('_', ' ', $field));
+			})->join(', ');
 
-		$modelName = Str::singular(Str::title($model));
-		$message = "$modelName updated successfully";
+			$modelName = Str::singular(Str::title($model));
+			$message = "$modelName updated successfully";
 
-		// Flash success message for Inertia
-		session()->flash('success', $message);
+			$message = $modelName . " updated successfully";
 
-		// Return back to maintain the current page
-		return back();
+			return success_response($message);
+		} catch (\Exception $e) {
+			return error_response("Failed to update $model: " . $e->getMessage());
+		}
 	}
 
-	/**
-	 * Return an error response
-	 *
-	 * @param string $message
-	 * @return RedirectResponseAlias
-	 */
-	protected function errorResponse(string $message): RedirectResponseAlias
-	{
-		session()->flash('error', $message);
-		return back()->withErrors(['message' => $message]);
-	}
+
 }

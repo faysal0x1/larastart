@@ -1,0 +1,11 @@
+import Layout from '@/layouts/auth-layout'
+import { Head } from '@inertiajs/react'
+
+export default function show({}) {
+    return (
+        <Layout>
+            <Head title="show"/>
+
+        </Layout>
+    )
+}

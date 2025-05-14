@@ -1,0 +1,46 @@
+// resources/js/Pages/BlogCategory/index.jsx
+import ListingPage from '@/components/ListingPage';
+import { column, createSerialColumn } from '@/utils/tableUtils';
+import { usePage } from '@inertiajs/react';
+import ActionsDropdown from '@/components/ActionsDropdown';
+
+export default function BlogCategory() {
+    const { blogCategory, filters = {}, auth } = usePage().props;
+
+    const breadcrumbs = [
+        {
+            title: 'Blog Category',
+            href: '/blog-category',
+        },
+    ];
+
+    const columns = [
+        createSerialColumn('Serial'),
+        column('name', 'Enter Name', (item) => <div className="font-medium">{item.name}</div>),
+        column('description', 'Enter Description', (item) => <div className="font-medium">{item.description}</div>),
+        column('order', 'Enter Blog Category Order', (item) => <div className="font-medium">{item.order}</div>),
+        column('actions', 'Actions', (item) => (
+            <ActionsDropdown
+                item={item}
+                routes={{
+                    view: (id) => route('blog-category.show', id),
+                    edit: (id) => route('blog-category.edit', id),
+                    delete: (id) => route('blog-category.destroy', id),
+                }}
+            />
+        )),
+    ];
+
+    return (
+        <ListingPage
+            title="BlogCategory"
+            data={blogCategory}
+            filters={filters}
+            currentUser={auth.user}
+            resourceName="blog-category"
+            breadcrumbs={breadcrumbs}
+            columns={columns}
+            createButtonText="New BlogCategory"
+        />
+    );
+}

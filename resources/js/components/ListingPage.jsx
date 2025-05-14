@@ -5,6 +5,8 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import Can from '@/components/permissions/Can.jsx';
+import ToastManager from '@/components/ToastManager.jsx';
 
 export default function ListingPage({
     title,
@@ -15,8 +17,8 @@ export default function ListingPage({
     resourceRoute,
     breadcrumbs,
     columns = [],
-    canCreate = true,
     createButtonText = 'New',
+    createPermission,
 }) {
     const singularResourceName = resourceName.endsWith('s') ? resourceName.slice(0, -1) : resourceName;
     const routeBase = resourceRoute || resourceName;
@@ -89,30 +91,41 @@ export default function ListingPage({
 
     // Handle sorting
     const handleSortChange = (column, direction) => {
-        console.log('Sort changed:', column, direction);
         setSortColumn(column);
         setSortDirection(direction);
     };
 
     // Handle page size change
     const handlePageSizeChange = (newSize) => {
-        console.log('Page size changed:', newSize);
         setPageSize(newSize);
     };
 
     // Handle search - FIXED
     const handleSearch = (term) => {
-        console.log('Search term changed:', term);
         setSearchTerm(term);
     };
 
     // Create actions for the DataTable header
-    const tableActions = canCreate && currentUser && (
-        <Link href={route(`${routeBase}.create`)}>
-            <Button className="flex items-center gap-1 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700">
-                <Plus className="h-4 w-4" /> {createButtonText || `New ${singularResourceName}`}
-            </Button>
-        </Link>
+    const CreateButton = ({ createPermission, routeBase, createButtonText, singularResourceName }) => {
+        console.log('Route Base');
+        console.log(routeBase);
+        return (
+            <Can permission={createPermission}>
+                <Link href={route(`${routeBase}.create`)}>
+                    <Button className="flex items-center gap-1 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700">
+                        <Plus className="h-4 w-4" /> {createButtonText || `New ${singularResourceName}`}
+                    </Button>
+                </Link>
+            </Can>
+        );
+    };
+    const tableActions = currentUser && (
+        <CreateButton
+            createPermission={createPermission}
+            routeBase={routeBase}
+            createButtonText={createButtonText}
+            singularResourceName={singularResourceName}
+        />
     );
 
     return (
@@ -141,6 +154,8 @@ export default function ListingPage({
                     onColumnVisibilityChange={setColumnVisibility}
                 />
             </div>
+
+            <ToastManager />
         </AppLayout>
     );
 }

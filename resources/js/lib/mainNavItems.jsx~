@@ -5,36 +5,89 @@ export const mainNavItems = [
         title: 'Dashboard',
         url: '/dashboard',
         icon: LayoutGrid,
+        permission: 'view-dashboard',
     },
     {
         title: 'Posts',
         url: '/posts',
         icon: LayoutGrid,
+        permission: 'view-posts',
+    },
+    {
+        title: 'Country',
+        url: '/admin/country',
+        icon: LayoutGrid,
+        permission: 'view-posts',
+    },
+    {
+        title: 'Blog',
+        icon: LayoutGrid,
+        permission: 'view-users',
+        subItems: [
+            {
+                title: 'Blogs',
+                url: '/admin/blog',
+                icon: LayoutGrid,
+                permission: 'view-users',
+            },
+            {
+                title: 'Blog Categories',
+                url: '/admin/blog-category',
+                icon: LayoutGrid,
+                permission: 'view-freelancers',
+            },
+            {
+                title: 'Blog Tags',
+                url: '/admin/blog',
+                icon: LayoutGrid,
+                permission: 'view-employers',
+            },
+        ],
     },
     {
         title: 'Users',
         icon: LayoutGrid,
+        permission: 'view-users',
         subItems: [
             {
                 title: 'All Users',
                 url: '/users',
                 icon: LayoutGrid,
+                permission: 'view-users',
             },
             {
                 title: 'Freelancers',
-                url: '/freelancers',
+                url: '/admin/freelancers',
                 icon: LayoutGrid,
+                permission: 'view-freelancers',
             },
             {
-                title: 'employer',
+                title: 'Employers',
                 url: '/employers',
                 icon: LayoutGrid,
+                permission: 'view-employers',
             },
         ],
     },
     {
-        title: 'MicroJobs',
-        url: '/micro-job-categories',
+        title: 'Micro Task Categories',
+        url: '/micro-task-categories',
+        icon: LayoutGrid,
+    },
+
+    {
+        title: 'Roles',
+        url: '/roles',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Permissions',
+        url: '/permissions',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'User Roles',
+        url: '/user-roles',
         icon: LayoutGrid,
     },
 ];

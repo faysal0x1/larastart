@@ -1,0 +1,58 @@
+import GlobalForm from '@/components/GlobalForm';
+import AppLayout from '@/layouts/app-layout.jsx';
+import { Head, usePage } from '@inertiajs/react';
+
+export default function create() {
+    const { permissions, auth } = usePage().props;
+    const permissionOptions = permissions.map((permission) => ({
+        label: permission.name,
+        value: permission.id
+    }));
+    const fields = [
+        {
+            name: 'name',
+            label: 'Name',
+            type: 'text',
+            placeholder: 'Enter Role name',
+            required: true,
+        },
+        {
+            name: 'permissions',
+            label: 'Permissions',
+            type: 'multiselect',
+            options: permissionOptions,
+            required: true,
+        },
+    ];
+    const breadcrumbs = [
+        {
+            title: 'Appearance settings',
+            href: '/settings/appearance',
+        },
+    ];
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Appearance settings" />
+            <div className="py-12">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <GlobalForm
+                        title="Create New Roles"
+                        description="Add a new roles for micro tasks"
+                        initialData={{
+                            name: '',
+                            description: '',
+                            icon: '',
+                            display_order: 0,
+                            status: true,
+                        }}
+                        fields={fields}
+                        submitUrl="/roles"
+                        submitLabel="Create New Roles"
+                        successMessage="Roles created successfully!"
+                    />
+                </div>
+            </div>
+        </AppLayout>
+    );
+}

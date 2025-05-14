@@ -1,0 +1,62 @@
+import GlobalForm from '@/components/GlobalForm';
+import AppLayout from '@/layouts/app-layout.jsx';
+import { Head, usePage } from '@inertiajs/react';
+
+export default function edit() {
+    const { blogcategory, permissions, auth } = usePage().props;
+    const permissionOptions = permissions.map((permission) => ({
+        label: permission.name,
+        value: permission.name,
+    }));
+
+    const fields = [
+        {
+            name: 'name',
+            label: 'Enter Name',
+            type: 'text',
+            placeholder: 'Enter BlogCategory name',
+            required: true,
+        },
+        {
+            name: 'description',
+            label: 'Enter Description',
+            type: 'text',
+            placeholder: 'Enter BlogCategory description',
+            required: true,
+        },
+        {
+            name: 'order',
+            label: 'Enter Blog Category Order',
+            type: 'number',
+            placeholder: 'Enter BlogCategory order',
+            required: true,
+        },
+    ];
+
+    const breadcrumbs = [
+        {
+            title: 'Edit BlogCategory',
+            href: '/BlogCategory',
+        },
+    ];
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Edit BlogCategory" />
+            <div className="py-12">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <GlobalForm
+                        title="Edit BlogCategory"
+                        description="Update BlogCategory information"
+                        initialData={blogcategory}
+                        fields={fields}
+                        submitUrl={`/admin/blog-category/${blogcategory.id}`}
+                        submitLabel="Update BlogCategory"
+                        successMessage="BlogCategory updated successfully!"
+                        method="PUT"
+                    />
+                </div>
+            </div>
+        </AppLayout>
+    );
+}

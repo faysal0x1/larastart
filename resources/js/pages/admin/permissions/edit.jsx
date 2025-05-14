@@ -1,0 +1,49 @@
+import GlobalForm from '@/components/GlobalForm';
+import AppLayout from '@/layouts/app-layout.jsx';
+import { Head, usePage } from '@inertiajs/react';
+
+export default function Edit() {
+    const { permission, auth } = usePage().props;
+
+
+
+    const fields = [
+        {
+            name: 'name',
+            label: 'Name',
+            type: 'text',
+            placeholder: 'Enter Permission name',
+            required: true,
+        }
+    ];
+
+    const breadcrumbs = [
+        {
+            title: 'Appearance settings',
+            href: '/settings/appearance',
+        },
+    ];
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Appearance settings" />
+            <div className="py-12">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <GlobalForm
+                        title="Edit Permission"
+                        description="Update permission details"
+                        initialData={{
+                            name: permission.name,
+                        }}
+                        fields={fields}
+                        submitUrl={`/permissions/${permission.id}`}
+                        method="put"
+                        submitLabel="Update Permission"
+                        cancelUrl="/permissions"
+                        successMessage="permission updated successfully!"
+                    />
+                </div>
+            </div>
+        </AppLayout>
+    );
+}

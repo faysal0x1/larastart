@@ -1,0 +1,55 @@
+import ActionsDropdown from '@/components/ActionsDropdown';
+import ListingPage from '@/components/ListingPage';
+import { createActionsColumn, createColumn, createDateColumn, createTagsColumn } from '@/utils/tableUtils';
+import { Link, usePage } from '@inertiajs/react';
+
+export default function RolesIndex() {
+    const { data, filters = {}, auth } = usePage().props;
+
+    const breadcrumbs = [
+        {
+            title: 'roles',
+            href: '/roles',
+        },
+    ];
+
+    // Define custom actions renderer
+
+    const columns = [
+        createColumn('name', 'Name', (row) => (
+            <div className="font-medium">
+                <Link href={route('roles.show', row.original.id)} className="hover:underline">
+                    {row.original.name}
+                </Link>
+            </div>
+        )),
+
+        createTagsColumn('permissions', 'Permissions'),
+
+
+        createDateColumn('created_at', 'Created'),
+        createActionsColumn((row) => (
+            <ActionsDropdown
+                item={row.original}
+                routes={{
+                    view: (id) => route('roles.show', id),
+                    edit: (id) => route('roles.edit', id),
+                    delete: (id) => route('roles.destroy', id),
+                }}
+            />
+        )),
+    ];
+
+    return (
+        <ListingPage
+            title="Roles"
+            data={data}
+            filters={filters}
+            currentUser={auth.user}
+            resourceName="roles"
+            breadcrumbs={breadcrumbs}
+            columns={columns} // Pass columns as a prop
+            createButtonText="New Role"
+        />
+    );
+}

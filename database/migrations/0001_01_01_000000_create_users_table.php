@@ -14,8 +14,21 @@ return new class extends Migration {
 			$table->string('name');
 			$table->string('username')->unique();
 			$table->string('email')->unique();
+			$table->string('phone')->unique()->nullable();
 			$table->string('password');
-			$table->enum('role', ['freelancer', 'employer', 'admin'])->default('freelancer');
+			$table->enum('role', [
+				'freelancer',
+				'employer',
+				'admin',
+				'superadmin',
+				'moderator',
+				'supermoderator',
+				'user',
+				'guest'
+			])->default('freelancer');
+
+			$table->string('photo')->nullable();
+
 			$table->timestamp('email_verified_at')->nullable();
 			$table->timestamp('last_login_at')->nullable();
 			$table->boolean('is_verified')->default(false);
@@ -23,6 +36,9 @@ return new class extends Migration {
 			$table->tinyInteger('status')->default(1);
 			$table->rememberToken();
 			$table->timestamps();
+
+			$table->string('otp')->nullable();
+			$table->timestamp('otp_expires_at')->nullable();
 
 			$table->softDeletes();
 		});

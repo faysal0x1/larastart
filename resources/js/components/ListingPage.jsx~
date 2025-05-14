@@ -5,19 +5,21 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import Can from '@/components/permissions/Can.jsx';
+import ToastManager from '@/components/ToastManager.jsx';
 
 export default function ListingPage({
-                                        title,
-                                        data,
-                                        filters = {},
-                                        currentUser,
-                                        resourceName,
-                                        resourceRoute,
-                                        breadcrumbs,
-                                        columns = [],
-                                        canCreate = true,
-                                        createButtonText = 'New',
-                                    }) {
+    title,
+    data,
+    filters = {},
+    currentUser,
+    resourceName,
+    resourceRoute,
+    breadcrumbs,
+    columns = [],
+    createButtonText = 'New',
+    createPermission,
+}) {
     const singularResourceName = resourceName.endsWith('s') ? resourceName.slice(0, -1) : resourceName;
     const routeBase = resourceRoute || resourceName;
 
@@ -59,24 +61,30 @@ export default function ListingPage({
     }, [debouncedSearchTerm, pageSize, sortColumn, sortDirection]);
 
     // Navigate using the router - FIXED with error logging
+    // const navigateWithFilters = (updatedFilters) => {
+    //     console.log('Navigating with filters:', updatedFilters);
+    //     router.visit(route(`${routeBase}.index`), {
+    //         data: updatedFilters,
+    //         method: 'get', // Changed from post with _method: 'GET' to direct get
+    //         preserveState: true,
+    //         preserveScroll: true,
+    //         replace: true,
+    //         onSuccess: () => {
+    //             console.log('Navigation successful');
+    //         },
+    //         onError: (errors) => {
+    //             console.error('Navigation error:', errors);
+    //         },
+    //     });
+    // };
+
     const navigateWithFilters = (updatedFilters) => {
-        console.log("Navigating with filters:", updatedFilters);
-        router.visit(
-            route(`${routeBase}.index`),
-            {
-                data: updatedFilters,
-                method: 'get', // Changed from post with _method: 'GET' to direct get
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-                onSuccess: () => {
-                    console.log("Navigation successful");
-                },
-                onError: (errors) => {
-                    console.error("Navigation error:", errors);
-                }
-            }
-        );
+        router.get(route(`${routeBase}.index`), {
+            data: updatedFilters,
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
     };
 
     // Handle page change
@@ -92,30 +100,41 @@ export default function ListingPage({
 
     // Handle sorting
     const handleSortChange = (column, direction) => {
-        console.log("Sort changed:", column, direction);
         setSortColumn(column);
         setSortDirection(direction);
     };
 
     // Handle page size change
     const handlePageSizeChange = (newSize) => {
-        console.log("Page size changed:", newSize);
         setPageSize(newSize);
-    }
+    };
 
     // Handle search - FIXED
     const handleSearch = (term) => {
-        console.log("Search term changed:", term);
         setSearchTerm(term);
-    }
+    };
 
     // Create actions for the DataTable header
-    const tableActions = canCreate && currentUser && (
-        <Link href={route(`${routeBase}.create`)}>
-            <Button className="flex items-center gap-1 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700">
-                <Plus className="h-4 w-4" /> {createButtonText || `New ${singularResourceName}`}
-            </Button>
-        </Link>
+    const CreateButton = ({ createPermission, routeBase, createButtonText, singularResourceName }) => {
+        console.log('Route Base');
+        console.log(routeBase);
+        return (
+            <Can permission={createPermission}>
+                <Link href={route(`${routeBase}.create`)}>
+                    <Button className="flex items-center gap-1 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700">
+                        <Plus className="h-4 w-4" /> {createButtonText || `New ${singularResourceName}`}
+                    </Button>
+                </Link>
+            </Can>
+        );
+    };
+    const tableActions = currentUser && (
+        <CreateButton
+            createPermission={createPermission}
+            routeBase={routeBase}
+            createButtonText={createButtonText}
+            singularResourceName={singularResourceName}
+        />
     );
 
     return (
@@ -144,6 +163,8 @@ export default function ListingPage({
                     onColumnVisibilityChange={setColumnVisibility}
                 />
             </div>
+
+            <ToastManager />
         </AppLayout>
     );
 }

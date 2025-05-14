@@ -16,12 +16,25 @@ class DatabaseSeeder extends Seeder
 
 
 		$this->call([
-			UserSeeder::class,
-			TagSeeder::class,
-			PostSeeder::class,
-			PostTagSeeder::class,
-			CountrySeeder::class,
 
+			# User Related Seeder
+			UserSeeder::class,
+			CountrySeeder::class,
+//			SkillsTableSeeder::class,
+			FreelancersTableSeeder::class,
+			UserLocationsTableSeeder::class,
+			FreelancerProfessionalDetailsTableSeeder::class,
+			FreelancerOnlinePresencesTableSeeder::class,
+			FreelancerCommunicationPreferencesTableSeeder::class,
+//			UserSkillsTableSeeder::class,
+
+			# Blog Related Seeder
+			TagSeeder::class,
+
+			// Permissions Part
+			PermissionSeeder::class,
+			RoleSeeder::class,
+			AssignPermissionsAndRolesSeeder::class,
 		]);
 	}
 }

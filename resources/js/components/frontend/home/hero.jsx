@@ -12,13 +12,13 @@ const Hero = ({ categories }) => {
         <div className="bg-gradient text-black min-h-[680px] flex items-center">
             <div className="max-w-7xl mx-auto w-full py-20 px-4 sm:py-28 sm:px-6 lg:px-8">
                 <div className="text-center">
-                    <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                    <h1 className="text-light text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
                         Find the perfect freelance services for your business
                     </h1>
-                    <p className="mt-6 max-w-lg mx-auto text-xl">
+                    <p className="text-light mt-6 max-w-lg mx-auto text-xl">
                         Get your micro-tasks completed quickly by talented freelancers worldwide
                     </p>
-                    <div className="mt-8 max-w-5xl mx-auto">
+                    <div className="mt-8 max-w-4xl mx-auto">
                         <form onSubmit={(e) => {
                             e.preventDefault();
                             // You can use Inertia's visit function to navigate to search results
@@ -29,7 +29,7 @@ const Hero = ({ categories }) => {
                                 <input
                                     type="text"
                                     name="search"
-                                    className="block w-full rounded-md border-0 py-4 px-4 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary"
+                                    className="bg-light block w-full rounded-md border-0 py-4 px-4 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary"
                                     placeholder="Search for micro-jobs..."
                                 />
                                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -47,7 +47,7 @@ const Hero = ({ categories }) => {
                                 <Link
                                     key={category.id}
                                     // href={route('search', { tag: category.name })}
-                                    className="inline-flex items-center px-4 py-2 rounded-full text-base font-medium bg-white/10 text-white hover:bg-white/20 transition-colors duration-200"
+                                    className="inline-flex items-center px-4 py-2 rounded-full text-base font-medium bg-white/10 text-light hover:bg-white/20 transition-colors duration-200"
                                 >
                                     {category.name}
                                 </Link>

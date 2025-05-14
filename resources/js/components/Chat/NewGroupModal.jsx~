@@ -1,0 +1,81 @@
+import React from 'react';
+import { useForm } from '@inertiajs/react';
+import Modal from '@/Components/Modal';
+
+export default function NewGroupModal({ show, onClose, users }) {
+    const { data, setData, post, processing, errors } = useForm({
+        title: '',
+        user_ids: [],
+    });
+
+    const toggleUser = (userId) => {
+        setData('user_ids', data.user_ids.includes(userId) ? data.user_ids.filter((id) => id !== userId) : [...data.user_ids, userId]);
+    };
+
+    const submit = (e) => {
+        e.preventDefault();
+        post(route('chat.group.create'), {
+            onSuccess: () => onClose(),
+        });
+    };
+
+    return (
+        <Modal show={show} onClose={onClose}>
+            <form onSubmit={submit} className="p-6">
+                <h2 className="text-lg font-medium text-gray-900">Create New Group</h2>
+
+                <div className="mt-4">
+                    <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                        Group Name
+                    </label>
+                    <input
+                        id="title"
+                        type="text"
+                        value={data.title}
+                        onChange={(e) => setData('title', e.target.value)}
+                        className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
+                    />
+                    {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
+                </div>
+
+                <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700">Add Members</label>
+                    <div className="mt-2 max-h-60 space-y-2 overflow-y-auto">
+                        {users.map((user) => (
+                            <div key={user.id} className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id={`user-${user.id}`}
+                                    checked={data.user_ids.includes(user.id)}
+                                    onChange={() => toggleUser(user.id)}
+                                    className="focus:ring-opacity-50 rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
+                                />
+                                <label htmlFor={`user-${user.id}`} className="ml-2 block text-sm text-gray-900">
+                                    {user.name}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                    {errors.user_ids && <p className="mt-1 text-sm text-red-600">{errors.user_ids}</p>}
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="mr-2 inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={processing}
+                        className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
+                    >
+                        Create Group
+                    </button>
+                </div>
+            </form>
+        </Modal>
+    );
+}

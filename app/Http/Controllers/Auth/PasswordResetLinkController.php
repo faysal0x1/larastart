@@ -3,39 +3,52 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
+use App\Mail\PasswordResetMail;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class PasswordResetLinkController extends Controller
 {
-    /**
-     * Show the password reset link request page.
-     */
-    public function create(Request $request): Response
-    {
-        return Inertia::render('auth/forgot-password', [
-            'status' => $request->session()->get('status'),
-        ]);
-    }
+	/**
+	 * Show the password reset link request page.
+	 */
+	public function create(Request $request): Response {
+		return Inertia::render('auth/forgot-password', [
+			'status' => $request->session()->get('status'),
+		]);
+	}
 
-    /**
-     * Handle an incoming password reset link request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'email' => 'required|email',
-        ]);
+	/**
+	 * Handle an incoming password reset link request.
+	 *
+	 * @throws \Illuminate\Validation\ValidationException
+	 */
+	public function store(Request $request)
+	{
+		$request->validate(['email' => 'required|email']);
 
-        Password::sendResetLink(
-            $request->only('email')
-        );
+		$user = User::where('email', $request->email)->first();
 
-        return back()->with('status', __('A reset link will be sent if the account exists.'));
-    }
+		if (!$user) {
+			return back()->withErrors(['email' => 'We could not find a user with that email address.']);
+		}
+
+		// Generate OTP (6 digits)
+		$otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+		// Store OTP in database
+		$user->update([
+			'otp' => $otp,
+			'otp_expires_at' => now()->addMinutes(10)
+		]);
+
+		// Send email with OTP
+		Mail::to($user->email)->send(new PasswordResetMail($otp));
+
+		return back()->with('status', 'We have emailed your password reset OTP!');
+
+	}
 }

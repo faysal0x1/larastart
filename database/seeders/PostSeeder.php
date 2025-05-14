@@ -64,39 +64,39 @@ class PostSeeder extends Seeder
 		}
 
 		// Handle soft deletes in separate, smaller batches if needed
-		if ($this->command->confirm('Do you want to soft delete approximately 10% of posts?', true)) {
-			$this->command->info('Soft deleting approximately 10% of posts...');
-
-			$toDelete = (int)($totalPosts * 0.1);
-			$deleteBatchSize = 100;
-
-			for ($i = 0; $i < $toDelete; $i += $deleteBatchSize) {
-				$limit = min($deleteBatchSize, $toDelete - $i);
-
-				// Get random post IDs
-				$postIds = DB::table('posts')
-					->whereNull('deleted_at')
-					->inRandomOrder()
-					->limit($limit)
-					->pluck('id');
-
-				if ($postIds->isEmpty()) {
-					break;
-				}
-
-				// Update with raw query to set deleted_at
-				DB::table('posts')
-					->whereIn('id', $postIds)
-					->update(['deleted_at' => Carbon::now()]);
-
-				// Free memory
-				unset($postIds);
-
-				if (function_exists('gc_collect_cycles')) {
-					gc_collect_cycles();
-				}
-			}
-		}
+//		if ($this->command->confirm('Do you want to soft delete approximately 10% of posts?', true)) {
+//			$this->command->info('Soft deleting approximately 10% of posts...');
+//
+//			$toDelete = (int)($totalPosts * 0.1);
+//			$deleteBatchSize = 100;
+//
+//			for ($i = 0; $i < $toDelete; $i += $deleteBatchSize) {
+//				$limit = min($deleteBatchSize, $toDelete - $i);
+//
+//				// Get random post IDs
+//				$postIds = DB::table('posts')
+//					->whereNull('deleted_at')
+//					->inRandomOrder()
+//					->limit($limit)
+//					->pluck('id');
+//
+//				if ($postIds->isEmpty()) {
+//					break;
+//				}
+//
+//				// Update with raw query to set deleted_at
+//				DB::table('posts')
+//					->whereIn('id', $postIds)
+//					->update(['deleted_at' => Carbon::now()]);
+//
+//				// Free memory
+//				unset($postIds);
+//
+//				if (function_exists('gc_collect_cycles')) {
+//					gc_collect_cycles();
+//				}
+//			}
+//		}
 
 		$this->command->info("Seeding completed successfully. Created $totalPosts posts.");
 	}

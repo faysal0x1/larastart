@@ -2,7 +2,7 @@
 
 const FeaturedGigs = () => {
     return (
-        <div className="gradient-bg text-white">
+        <div className="bg-gradient text-white">
             <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 lg:py-24">
                 <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
                     <div>

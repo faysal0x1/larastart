@@ -1,10 +1,10 @@
 // resources/js/utils/tableUtils.jsx
+import ActionsDropdown from '@/components/ActionsDropdown.jsx';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
-
 import { ToggleSwitch } from '@/components/ui/toggle-switch';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { format } from 'date-fns';
 import { toast } from 'sonner';
 
 /**
@@ -135,7 +135,7 @@ export function createTagsColumn(key, header) {
                             {tag.name}
                         </Badge>
                     ))}
-                    {tags.length === 0 && <span className="text-sm text-gray-400 dark:text-gray-500">No tags</span>}
+                    {tags.length === 0 && <span className="text-sm text-gray-400 dark:text-gray-500">No {header.toLowerCase()}</span>}
                 </div>
             );
         },
@@ -172,19 +172,31 @@ export const withOriginal = (callback) => {
     return (row) => callback(row.original);
 };
 
-export const column = (accessor, header, renderFn = null) => {
-    if (typeof renderFn === 'function') {
-        return {
-            accessorKey: accessor,
-            header: header,
-            cell: ({ row }) => renderFn(row.original),
-        };
+export const column = (accessor, headerOrRenderFn = null, renderFn = null) => {
+    // Handle the case where the second parameter is the render function
+    if (typeof headerOrRenderFn === 'function') {
+        renderFn = headerOrRenderFn;
+        headerOrRenderFn = null;
     }
 
-    return {
+    // If no header is provided, capitalize the accessor
+    const header = headerOrRenderFn || capitalize(accessor);
+
+    // Create and return the column configuration
+    const columnConfig = {
         accessorKey: accessor,
         header: header,
     };
+
+    if (typeof renderFn === 'function') {
+        columnConfig.cell = ({ row }) => renderFn(row.original);
+    }
+
+    return columnConfig;
+};
+
+const capitalize = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 /**
@@ -238,7 +250,7 @@ export function createToggleColumn(key, header, routeName, options = {}) {
         successMessage = `${key.replace('_', ' ')} updated successfully`,
         errorMessage = `Failed to update ${key.replace('_', ' ')}`,
         idAccessor = 'id',
-        modelType = 'user', // Add default model type
+        modelType = '',
         disabledFn = null,
         size = 'default',
         onToggleSuccess = null,
@@ -264,11 +276,6 @@ export function createToggleColumn(key, header, routeName, options = {}) {
                         preserveScroll,
                         preserveState,
                         onSuccess: (page) => {
-                            // Show success toast with sonner
-                            toast.success('Success', {
-                                description: successMessage,
-                            });
-
                             // Call success callback if provided
                             if (onToggleSuccess) {
                                 onToggleSuccess(page.props, row.original);
@@ -276,11 +283,6 @@ export function createToggleColumn(key, header, routeName, options = {}) {
                         },
                         onError: (errors) => {
                             console.error('Toggle update failed:', errors);
-
-                            // Show error toast with sonner
-                            toast.error('Error', {
-                                description: errorMessage,
-                            });
                         },
                     });
                 } catch (error) {
@@ -329,4 +331,67 @@ export function createStatusToggleColumn(key, header, routeName, activeValue = 1
             [key]: newValue ? activeValue : inactiveValue,
         }),
     });
+}
+
+export function createPermissionActionsColumn(actions = [], header = 'Actions') {
+    return {
+        id: 'actions',
+        header,
+        cell: ({ row }) => {
+            const { auth, roles, permissions } = usePage().props;
+            const item = row.original;
+
+            console.log('item');
+            console.log(item);
+
+            console.log('role');
+
+            console.log(roles);
+
+            console.log('Auth Role');
+            console.log(roles);
+
+            console.log('Permissions');
+            console.log(permissions);
+            // Filter actions based on permissions
+            const filteredActions = actions.filter((action) => {
+                // Show if no permission/role required
+                if (!action.permission && !action.role) return true;
+
+                // Check permission if specified
+                if (action.permission && !auth.permissions?.includes(action.permission)) {
+                    return false;
+                }
+
+                // Check role if specified
+                if (action.role && !auth.roles?.includes(action.role)) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            // Don't show dropdown if no actions available
+            if (filteredActions.length === 0) return null;
+
+            return (
+                <div className="text-center">
+                    <ActionsDropdown item={item}>
+                        {filteredActions.map((action) => (
+                            <ActionsDropdown.Item
+                                key={action.key}
+                                href={action.href ? action.href(item) : undefined}
+                                onClick={action.onClick ? () => action.onClick(item) : undefined}
+                                className={action.className}
+                            >
+                                {action.label}
+                                {action.icon && <action.icon className="ml-2 h-4 w-4" />}
+                            </ActionsDropdown.Item>
+                        ))}
+                    </ActionsDropdown>
+                </div>
+            );
+        },
+        enableSorting: false,
+    };
 }

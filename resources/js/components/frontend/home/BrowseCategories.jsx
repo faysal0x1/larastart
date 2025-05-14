@@ -1,6 +1,7 @@
+// import { link } from 'fs';
 import * as LucideIcons from 'lucide-react';
 import { Keyboard, Paintbrush, Pen, Smartphone, Video } from 'lucide-react';
-
+import { Link } from '@inertiajs/react';
 const iconMap = {
     'paint-brush': Paintbrush,
     'pen-fancy': Pen,
@@ -34,10 +35,11 @@ const BrowseCategories = ({ categories }) => {
                 </div>
                 {/* icons and category list  */}
                 <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-                    {categories.slice(0,3).map((category, index) => {
+                    {categories.slice(0, 3).map((category, index) => {
                         const iconName = toPascalCase(category.icon);
                         const Icon = LucideIcons[iconName];
                         return (
+
                             <div
                                 key={index}
                                 className="overflow-hidden rounded-lg bg-white shadow transition-all hover:-translate-y-1 hover:shadow-lg"
@@ -46,7 +48,7 @@ const BrowseCategories = ({ categories }) => {
                                     <div className="bg-primary/10 text-primary mx-auto flex h-12 w-12 items-center justify-center rounded-md">
                                         {Icon && <Icon className="h-6 w-6" />}
                                     </div>
-                                    <h3 className="text-dark mt-3 text-lg font-medium">{category.name}</h3>
+                                    <Link> <h3 className="text-dark mt-3 text-lg font-medium">{category.name}</h3></Link>
                                     <p className="mt-1 text-sm text-gray-500">
                                         {/*{category.jobs.toLocaleString()} available jobs*/}
                                         10 available jobs

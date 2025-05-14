@@ -1,0 +1,46 @@
+import React from 'react';
+import { Head, usePage } from '@inertiajs/react';
+import ChatList from '@/Components/Chat/ChatList';
+import UserList from '@/Components/Chat/UserList';
+import NewGroupModal from '@/Components/Chat/NewGroupModal';
+import AppLayout from '@/layouts/app-layout.jsx';
+
+export default function ChatIndex() {
+    const { conversations, users } = usePage().props;
+    const [showGroupModal, setShowGroupModal] = React.useState(false);
+
+    return (
+        <AppLayout>
+            <Head title="Chat" />
+
+            <div className="flex h-[calc(100vh-65px)]">
+                {/* Sidebar */}
+                <div className="w-1/4 border-r border-gray-200 bg-white">
+                    <div className="border-b border-gray-200 p-4">
+                        <h2 className="text-xl font-semibold">Chats</h2>
+                        <button onClick={() => setShowGroupModal(true)} className="mt-2 text-sm text-blue-600 hover:text-blue-800">
+                            New Group
+                        </button>
+                    </div>
+
+                    <ChatList conversations={conversations} />
+
+                    <div className="border-t border-gray-200 p-4">
+                        <h3 className="font-medium">All Users</h3>
+                        <UserList users={users} />
+                    </div>
+                </div>
+
+                {/* Main Content */}
+                <div className="flex flex-1 items-center justify-center bg-gray-50">
+                    <div className="text-center">
+                        <h3 className="text-lg font-medium text-gray-900">Select a chat to start messaging</h3>
+                        <p className="mt-1 text-sm text-gray-500">Or start a new conversation</p>
+                    </div>
+                </div>
+            </div>
+
+            <NewGroupModal show={showGroupModal} onClose={() => setShowGroupModal(false)} users={users} />
+        </AppLayout>
+    );
+}

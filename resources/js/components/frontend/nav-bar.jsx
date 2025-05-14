@@ -6,6 +6,7 @@ const navLinks = [
     { label: "Pricing", name: "pricing" },
     { label: "Registration", name: "register" },
     { label: "Login", name: "login" },
+    { label: "U-Dashboard", name: "employeeDashoard" },
 ];
 
 const Navbar = () => {
@@ -16,8 +17,8 @@ const Navbar = () => {
                     <div className="flex items-center">
                         <div className="flex-shrink-0 flex items-center">
                             <Link href={route('home')}>
-                                {/*<FaBolt className="text-primary text-2xl mr-2" />*/}
-                                <span className="text-xl font-bold text-dark">MicroJob</span>
+                                {/* <FaBolt className="text-primary text-2xl mr-2" /> */}
+                                <span className="text-xl font-semibold text-dark">MicroJob</span>
                             </Link>
                         </div>
                     </div>
@@ -39,7 +40,7 @@ const Navbar = () => {
                         </Link>
                     </div>
                     <div className="flex items-center md:hidden">
-                        <button type="button" className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
+                        <button type="button" className="bg-primary inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
                             <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                             </svg>

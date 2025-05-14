@@ -2,7 +2,7 @@
 import ListingPage from '@/components/ListingPage';
 import { column, createSerialColumn } from '@/utils/tableUtils';
 import { Link, usePage } from '@inertiajs/react';
-import ActionsDropdown from '@/components/ActionsDropdown';
+import ActionsDropdown from '@/components/ActionsDropdown.jsx';
 
 export default function Users() {
     const { users, filters = {}, auth } = usePage().props;
@@ -16,7 +16,7 @@ export default function Users() {
 
     // Define custom actions renderer
     const columns = [
-        createSerialColumn("Serial"),
+        createSerialColumn('Serial'),
         column('name', 'Name', (item) => (
             <div className="font-medium">
                 <Link href={route('posts.show', item.id)} className="hover:underline">
@@ -31,7 +31,6 @@ export default function Users() {
         column('role', 'Role'),
 
         column('created_at', 'Created', (item) => <span>{new Date(item.created_at).toLocaleDateString()}</span>),
-
         column('actions', 'Actions', (item) => (
             <ActionsDropdown
                 item={item}
@@ -39,6 +38,11 @@ export default function Users() {
                     view: (id) => route('users.show', id),
                     edit: (id) => route('users.edit', id),
                     delete: (id) => route('users.destroy', id),
+                }}
+                permissions={{
+                    view: 'view users',
+                    edit: 'edit_users',
+                    delete: 'delete users',
                 }}
             />
         )),
@@ -54,6 +58,7 @@ export default function Users() {
             breadcrumbs={breadcrumbs}
             columns={columns}
             createButtonText="New Users"
+            createPermission="create_users"
         />
     );
 }

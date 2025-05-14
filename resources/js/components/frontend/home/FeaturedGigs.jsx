@@ -76,7 +76,7 @@ const gigs = [
 ];
 
 
-const FeaturedGigs = () => {
+const FeaturedGigs = ({microTasks}) => {
     return (
         <div className="bg-white py-16 sm:py-24">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -88,25 +88,37 @@ const FeaturedGigs = () => {
                 </div>
 
                 <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    {gigs.map((gig) => (
+                    {microTasks.map((gig) => (
                         <div
                             key={gig.id}
                             className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                         >
                             <div className="aspect-w-3 aspect-h-2 bg-gray-100">
-                                <img src={gig.image} alt={gig.title} className="object-cover w-full h-48" />
+                                <div className="aspect-w-3 aspect-h-2 bg-gray-100">
+                                    {gig.thumbnails ? (
+                                        <img
+                                            src={`${window.location.origin}/storage/${gig.thumbnails}`}
+                                            alt={gig.title}
+                                            className="object-cover w-full h-48"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                                            <span className="text-gray-500">No thumbnail</span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                             <div className="p-4">
                                 <div className="flex items-center">
                                     <div className="flex-shrink-0">
-                                        <img className="h-10 w-10 rounded-full" src={gig.seller.avatar} alt={gig.seller.name} />
+                                        {/*<img className="h-10 w-10 rounded-full" src={gig.employer.photo || "https://randomuser.me/api/portraits/men/45.jpg"} alt={gig.employer.name} />*/}
                                     </div>
                                     <div className="ml-3">
-                                        <p className="text-sm font-medium text-gray-900">{gig.seller.name}</p>
+                                        <p className="text-sm font-medium text-gray-900">{gig.employer.name}</p>
                                         <div className="flex space-x-1 text-sm text-gray-500">
                                             <i className="fas fa-star text-yellow-400"></i>
-                                            <span>{gig.rating}</span>
-                                            <span>({gig.reviews})</span>
+                                            <span>{gig.rating || 0}</span>
+                                            <span>({gig.reviews || 0})</span>
                                         </div>
                                     </div>
                                 </div>
@@ -115,7 +127,7 @@ const FeaturedGigs = () => {
                                     {gig.description}
                                 </p>
                                 <div className="mt-4 flex justify-between items-center">
-                                    <span className="text-lg font-bold text-dark">{gig.price}</span>
+                                    <span className="text-lg font-bold text-dark">{gig.budget}</span>
                                     <button className="text-sm font-medium text-primary hover:text-primary/80">
                                         View Details
                                     </button>

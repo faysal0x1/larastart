@@ -1,4 +1,3 @@
-// resources/js/Pages/posts/index.jsx
 import ListingPage from '@/components/ListingPage';
 import { column, createSerialColumn, createToggleColumn, linkColumn } from '@/utils/tableUtils';
 import { usePage } from '@inertiajs/react';
@@ -38,12 +37,6 @@ export default function Freelancers() {
             modelType: 'user',
         }),
 
-        // Integer toggle column for status
-        // createStatusToggleColumn('status', 'Active', 'users.update', 1, 0, {
-        //     confirmMessage: 'Are you sure you want to change the active status for this user?',
-        //     successMessage: 'user status updated successfully',
-        //     errorMessage: 'Failed to update user status',
-        // }),
         column('actions', 'Actions', (item) => (
             <ActionsDropdown
                 item={item}

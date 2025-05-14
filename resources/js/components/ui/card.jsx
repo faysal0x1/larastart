@@ -26,5 +26,5 @@ function CardFooter({ className, ...props }) {
     return (<div data-slot="card-footer" className={cn("flex items-center px-6", className)} {...props}/>);
 }
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
+export  { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
 

@@ -161,7 +161,7 @@ export default function DataTable({
                 <div className="flex items-center gap-2">
                     {actions}
 
-                    <ExportDropdown onExport={onExport} data={data} allData={totalItems > data.length ? null : data} />
+                    <ExportDropdown onExport={onExport} data={data} allData={null} />
 
                     {showColumnToggle && columns.length > 0 && (
                         <DropdownMenu>

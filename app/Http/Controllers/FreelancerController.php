@@ -52,7 +52,7 @@ class FreelancerController extends Controller
 		try {
 			$user = User::findOrFail($id);
 
-			return Inertia::render('freelancer/Show', [
+			return Inertia::render('freelancer/show', [
 				'user' => $user,
 			]);
 		} catch (\Exception $e) {
@@ -80,6 +80,6 @@ class FreelancerController extends Controller
 	 * Remove the specified resource from storage.
 	 */
 	public function destroy(string $id) {
-		//
+
 	}
 }

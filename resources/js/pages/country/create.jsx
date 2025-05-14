@@ -1,0 +1,58 @@
+import GlobalForm from '@/components/GlobalForm';
+import AppLayout from '@/layouts/app-layout.jsx';
+import { Head, usePage } from '@inertiajs/react';
+
+export default function create() {
+    const { permissions, auth } = usePage().props;
+    const permissionOptions = permissions.map((permission) => ({
+        label: permission.name,
+        value: permission.name
+    }));
+    const fields = [
+        {
+            name: 'name',
+            label: 'Name',
+            type: 'text',
+            placeholder: 'Enter Country name',
+            required: true,
+        },
+        {
+            name: 'code',
+            label: 'Code',
+            type: 'text',
+            placeholder: 'Enter Country Code',
+            required: true,
+        },
+    ];
+    const breadcrumbs = [
+        {
+            title: 'Create Country',
+            href: '/settings/appearance',
+        },
+    ];
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Create Country" />
+            <div className="py-12">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <GlobalForm
+                        title="Create New Country"
+                        description="Add a new country"
+                        initialData={{
+                            name: '',
+                            description: '',
+                            icon: '',
+                            display_order: 0,
+                            status: true,
+                        }}
+                        fields={fields}
+                        submitUrl="/admin/country"
+                        submitLabel="Create New Country"
+                        successMessage="Country created successfully!"
+                    />
+                </div>
+            </div>
+        </AppLayout>
+    );
+}

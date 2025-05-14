@@ -27,7 +27,10 @@ class TagSeeder extends Seeder
 		];
 
 		foreach ($tags as $tagName) {
-			Tag::create(['name' => $tagName]);
+			Tag::create([
+				'name' => $tagName,
+				'slug' => $tagName
+			]);
 		}
 	}
 }
