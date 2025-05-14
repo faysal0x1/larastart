@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 
-const Hero = ({ categories }) => {
+const Hero = () => {
     const popularTags = ['Design', 'Writing', 'Video', 'Data Entry', 'Programming', 'Marketing', 'Translation', 'Social Media'];
 
     const handleTagClick = (tag) => {
@@ -43,7 +43,7 @@ const Hero = ({ categories }) => {
                             </div>
                         </form>
                         <div className="mt-8 flex flex-wrap justify-center gap-3">
-                            {categories.slice(0, 5).map((category) => (
+                            {popularTags.slice(0, 5).map((category) => (
                                 <Link
                                     key={category.id}
                                     // href={route('search', { tag: category.name })}

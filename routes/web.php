@@ -51,24 +51,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 	Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
 
-	Route::get('/employer/dashboard', [DashboardController::class, 'employerDashboard'])->name('employer.dashboard');
-
-	Route::get('/freelancer/dashboard', [DashboardController::class, 'freelancerDashboard'])->name('freelancer.dashboard');
-
-//	Route::get('dashboard', function () {
-//		return Inertia::render('dashboard');
-//	})->name('dashboard');
-
 	Route::any('/posts', [PostController::class, 'index'])
 		->name('posts.index');
 
 	Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
 	Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
 	Route::post('/posts/{id}', [PostController::class, 'show'])->name('posts.show');
-
-// Edit , Delete , show route for posts
-
-
 	Route::get('/posts/{id}/edit', [PostController::class, 'edit'])->name('posts.edit');
 
 	Route::post('/posts/{id}', [PostController::class, 'update'])->name('posts.update');
@@ -77,11 +65,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 	Route::resource('users', UserController::class);
 	Route::resource('employers', EmployeerController::class);
 
-	Route::resource('micro-task-categories', MicroTaskCategoryController::class);
 
 	Route::patch('/{model}/{id}', [AdminController::class, 'updateStatus'])
 		->name('status.update');
-
 });
 
 require __DIR__ . '/settings.php';
@@ -89,5 +75,3 @@ require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';
 require __DIR__ . '/jayead.php';
 require __DIR__ . '/faysal.php';
-
-

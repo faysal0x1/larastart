@@ -7,7 +7,8 @@ use Inertia\Response;
 
 class DashboardController extends Controller
 {
-	public function index() {
+	public function index()
+	{
 		$user = auth()->user();
 
 
@@ -16,31 +17,22 @@ class DashboardController extends Controller
 		}
 
 		if ($user->role === 'employer') {
-//			return Inertia::render('frontend/custom/clientDashboard/clientDashboard');
+			//			return Inertia::render('frontend/custom/clientDashboard/clientDashboard');
 			return redirect()->route('employer.dashboard');
 		}
 
 		if ($user->role === 'freelancer') {
 			return Inertia::render('frontend/employeeDashboard/employeeDashboardIndex');
 
-//			return redirect()->route('freelancer.dashboard');
+			//			return redirect()->route('freelancer.dashboard');
 		}
 
 		return Inertia::render('dashboard');
-
 	}
 
 
-	public function adminDashboard(): Response {
+	public function adminDashboard(): Response
+	{
 		return Inertia::render('dashboard');
-	}
-
-	public function employerDashboard(): Response {
-		return Inertia::render('frontend/custom/clientDashboard/clientDashboard');
-
-	}
-
-	public function freelancerDashboard(): Response {
-		return Inertia::render('frontend/employeeDashboard/employeeDashboardIndex');
 	}
 }

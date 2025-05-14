@@ -20,12 +20,8 @@ Route::middleware(['auth', 'verified', 'verify_active_session'])->group(function
 
 
 	Route::prefix('admin')->group(function () {
-		Route::resource('freelancers', FreelancerController::class);
-
 		Route::resource('country', CountryController::class);
-
 		Route::resource('blog-category', BlogCategoryController::class);
 		Route::resource('blogs', BlogController::class);
-
 	});
 });

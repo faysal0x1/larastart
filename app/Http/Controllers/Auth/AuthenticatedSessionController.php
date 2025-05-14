@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\UserLoginHistory;
-use App\Models\UserSession;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,7 +20,8 @@ class AuthenticatedSessionController extends Controller
 	/**
 	 * Show the login page.
 	 */
-	public function create(Request $request): Response {
+	public function create(Request $request): Response
+	{
 		return Inertia::render('auth/login', [
 			'canResetPassword' => Route::has('password.request'),
 			'status' => $request->session()->get('status'),
@@ -48,7 +48,8 @@ class AuthenticatedSessionController extends Controller
 	/**
 	 * Handle an incoming authentication request with security enhancements.
 	 */
-	public function store(LoginRequest $request): RedirectResponse {
+	public function store(LoginRequest $request): RedirectResponse
+	{
 		// Begin transaction to ensure all related operations complete successfully
 		DB::beginTransaction();
 
@@ -58,84 +59,9 @@ class AuthenticatedSessionController extends Controller
 				->where('email', $request->email)
 				->first();
 
-			if ($user) {
-				$activeSessions = UserSession::where('user_id', $user->id)
-					->where('is_active', true)
-					->where('expiry_time', '>', Carbon::now())
-					->get();
-
-				// If active sessions exist and we're enforcing single login
-				if ($activeSessions->count() > 0) {
-					// Option 1: Force logout other sessions
-					UserSession::where('user_id', $user->id)
-						->update([
-							'is_active' => false,
-							'logged_out_at' => Carbon::now(),
-							'force_logged_out' => true
-						]);
-
-					// Store this event in login history
-					UserLoginHistory::create([
-						'user_id' => $user->id,
-						'ip_address' => get_client_ip(),
-						'user_agent' => get_client_browser(),
-						'event_type' => 'forced_previous_logout',
-						'additional_data' => json_encode(get_client_full_details()),
-						'created_at' => Carbon::now(),
-					]);
-
-					// Flash warning message for the user
-					Session::flash('warning', 'You were logged in on another device or browser. Those sessions have been terminated.');
-				}
-			}
-
-			// Regular authentication
 			$request->authenticate();
-
 			// Regenerate session for security
 			$request->session()->regenerate();
-
-			// Get client details using our helper functions
-			$clientDetails = get_client_full_details();
-			$deviceDetails = [
-				'browser' => $clientDetails['browser'],
-				'os' => $clientDetails['os'],
-				'device_type' => $clientDetails['device_type'],
-			];
-
-			// Create session record with token
-			$sessionToken = bin2hex(random_bytes(32));
-			$currentSession = new UserSession([
-				'user_id' => Auth::id(),
-				'session_id' => Session::getId(),
-				'session_token' => $sessionToken,
-				'ip_address' => get_client_ip(),
-				'user_agent' => get_client_browser(),
-				'device_details' => json_encode($deviceDetails),
-				'is_active' => true,
-				'login_time' => Carbon::now(),
-				'last_activity' => Carbon::now(),
-				'expiry_time' => Carbon::now()->addHours(config('session.lifetime', 2)),
-			]);
-			$currentSession->save();
-
-			// Store the session token in the session for future verification
-			Session::put('session_token', $sessionToken);
-
-			// Try to get location data
-			$location = $this->getLocationFromIp(get_client_ip());
-
-			// Record login history
-			UserLoginHistory::create([
-				'user_id' => Auth::id(),
-				'ip_address' => get_client_ip(),
-				'user_agent' => get_client_browser(),
-				'location' => $location,
-				'session_id' => Session::getId(),
-				'event_type' => 'login_success',
-				'additional_data' => json_encode($clientDetails),
-				'created_at' => Carbon::now(),
-			]);
 
 			DB::commit();
 
@@ -165,7 +91,8 @@ class AuthenticatedSessionController extends Controller
 	/**
 	 * Get location information from IP address
 	 */
-	private function getLocationFromIp(string $ip): ?string {
+	private function getLocationFromIp(string $ip): ?string
+	{
 		try {
 			// For demonstration - you should implement this with a proper IP geolocation service
 			// For example: GeoIP2, ipinfo.io, ip-api.com, etc.
@@ -182,26 +109,19 @@ class AuthenticatedSessionController extends Controller
 	/**
 	 * Destroy an authenticated session.
 	 */
-	public function destroy(Request $request): RedirectResponse {
-//		Auth::guard('web')->logout();
-//
-//		$request->session()->invalidate();
-//		$request->session()->regenerateToken();
-//
-//		return redirect('/');
+	public function destroy(Request $request): RedirectResponse
+	{
+		//		Auth::guard('web')->logout();
+		//
+		//		$request->session()->invalidate();
+		//		$request->session()->regenerateToken();
+		//
+		//		return redirect('/');
 
 		// Get current user
 		$user = Auth::user();
 
 		if ($user) {
-			// Mark session as inactive
-			UserSession::where('user_id', $user->id)
-				->where('session_id', Session::getId())
-				->update([
-					'is_active' => false,
-					'logged_out_at' => Carbon::now()
-				]);
-
 			// Record logout in history
 			UserLoginHistory::create([
 				'user_id' => $user->id,

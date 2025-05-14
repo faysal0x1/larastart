@@ -24,13 +24,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 		Route::get('/{conversation}', [ChatController::class, 'show'])->name('chat.show');
 		Route::post('/{conversation}/message', [ChatController::class, 'storeMessage'])->name('chat.message.store');
 	});
-
-	// Profile routes
-//	Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
 });
-Route::get('/e-profile', [FreelancerProfilerController::class, 'profile'])
-	->name('e-profile');
-
-
-Route::put('/profile-update', [FreelancerProfilerController::class, 'update'])->name('freelancer.profile.update');
-Route::post('/profile/image', [FreelancerProfilerController::class, 'updateProfileImage'])->name('profile.update.image');
