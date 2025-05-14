@@ -13,7 +13,6 @@ export default function Home({ categories, users, microTasks }) {
             <Hero />
             <HowItWorks />
             <div className="bg-gray-50 pt-5">
-                <MicroJobTalent />
                 <ProComponent className="mt-7"></ProComponent>
             </div>
             <CTA />

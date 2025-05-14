@@ -302,9 +302,7 @@ export function EmployeeNavbar({ dp, initialUnreadNotifications = 4, initialUnre
                             <DropdownMenuContent align="end" className="w-48">
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <Link href={route('e-profile')}>
-                                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                                </Link>
+
                                 <Link href={route('setting')}>
                                     {' '}
                                     <DropdownMenuItem>Settings</DropdownMenuItem>
