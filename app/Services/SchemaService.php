@@ -2,8 +2,6 @@
 namespace App\Services;
 
 use App\Models\Blog;
-use App\Models\MicroTask;
-use App\Models\User;
 use Illuminate\Support\Facades\URL;
 
 class SchemaService

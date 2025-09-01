@@ -2,7 +2,6 @@
 
 namespace App\Helpers;
 
-use App\Models\MicroTask;
 use App\Models\User;
 use App\Notifications\GlobalNotification;
 use App\Notifications\JobNotification;
@@ -11,63 +10,7 @@ use App\Services\JobNotificationService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Notification Helper Functions
- *
- * This helper provides easy-to-use functions for sending notifications
- * without needing to inject services into controllers.
- */
 
-/**
- * Send job notification to admin when new job is posted
- */
-function notifyAdminAboutNewJob(MicroTask $job): void
-{
-    try {
-        $service = App::make(JobNotificationService::class);
-        $service->notifyAdminAboutNewJob($job);
-    } catch (\Exception $e) {
-        Log::error('Failed to send admin notification about new job', [
-            'job_id' => $job->id,
-            'error' => $e->getMessage()
-        ]);
-    }
-}
-
-/**
- * Send job status notification to employer
- */
-function notifyEmployerAboutJobStatus(MicroTask $job, string $status, ?string $reason = null): void
-{
-    try {
-        $service = App::make(JobNotificationService::class);
-        $service->notifyEmployerAboutJobStatus($job, $status, $reason);
-    } catch (\Exception $e) {
-        Log::error('Failed to send employer notification about job status', [
-            'job_id' => $job->id,
-            'status' => $status,
-            'error' => $e->getMessage()
-        ]);
-    }
-}
-
-/**
- * Handle job status change with notifications
- */
-function handleJobStatusChange(MicroTask $job, string $oldStatus, string $newStatus, ?string $reason = null): void
-{
-    try {
-        $service = App::make(JobNotificationService::class);
-        $service->handleJobStatusChange($job, $oldStatus, $newStatus, $reason);
-    } catch (\Exception $e) {
-        Log::error('Failed to handle job status change notification', [
-            'job_id' => $job->id,
-            'old_status' => $oldStatus,
-            'new_status' => $newStatus,
-            'error' => $e->getMessage()
-        ]);
-    }
-}
 
 /**
  * Send success notification to specific users
@@ -249,37 +192,7 @@ function notifyWelcomeUser(User $user): void
     );
 }
 
-/**
- * Send job completion notification to employer
- */
-function notifyJobCompleted(MicroTask $job): void
-{
-    notifyEmployerAboutJobStatus($job, 'completed');
-}
 
-/**
- * Send job approval notification to employer
- */
-function notifyJobApproved(MicroTask $job): void
-{
-    notifyEmployerAboutJobStatus($job, 'approved');
-}
-
-/**
- * Send job rejection notification to employer
- */
-function notifyJobRejected(MicroTask $job, string $reason): void
-{
-    notifyEmployerAboutJobStatus($job, 'rejected', $reason);
-}
-
-/**
- * Send job pause notification to employer
- */
-function notifyJobPaused(MicroTask $job, string $reason): void
-{
-    notifyEmployerAboutJobStatus($job, 'paused', $reason);
-}
 
 /**
  * Send balance low warning to user

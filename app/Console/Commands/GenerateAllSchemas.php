@@ -2,8 +2,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Blog;
-use App\Models\MicroTask;
-use App\Models\MicroTaskCategory;
 use App\Models\User;
 use App\Services\SchemaService;
 use Illuminate\Console\Command;

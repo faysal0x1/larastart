@@ -53,12 +53,6 @@ class PermissionSeeder extends Seeder
 				'edit-employers',
 				'delete-employers',
 			],
-			'micro-task-categories' => [
-				'view-micro-task-categories',
-				'create-micro-task-categories',
-				'edit-micro-task-categories',
-				'delete-micro-task-categories',
-			],
 			'profile' => [
 				'view-profile',
 				'update-profile',

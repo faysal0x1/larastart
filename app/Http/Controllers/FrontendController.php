@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MicroTask;
-use App\Models\MicroTaskCategory;
 use Inertia\Inertia;
 
 class FrontendController extends Controller
