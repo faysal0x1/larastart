@@ -1,0 +1,46 @@
+@import "tailwindcss/preflight";
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .doc-content {
+    @apply prose prose-lg max-w-none;
+  }
+
+  .doc-content h1 {
+    @apply text-3xl font-bold text-gray-900 mb-6;
+  }
+
+  .doc-content h2 {
+    @apply text-2xl font-semibold text-gray-800 mt-8 mb-4;
+  }
+
+  .doc-content h3 {
+    @apply text-xl font-medium text-gray-800 mt-6 mb-3;
+  }
+
+  .doc-content p {
+    @apply text-gray-700 mb-4;
+  }
+
+  .doc-content code {
+    @apply bg-gray-100 px-2 py-1 rounded text-sm font-mono;
+  }
+
+  .doc-content pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto;
+  }
+
+  .doc-content pre code {
+    @apply bg-transparent p-0 text-gray-100;
+  }
+}
