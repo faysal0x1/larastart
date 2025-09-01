@@ -1,7 +1,6 @@
-import React from 'react';
-import Navbar from '@/components/frontend/nav-bar';
 import Footer from '@/components/frontend/footer';
-import { Head } from '@inertiajs/react';
+import Navbar from '@/components/frontend/nav-bar';
+import ToastManager from '@/components/ToastManager.jsx';
 
 export default function Layout({ children }) {
     return (
@@ -24,9 +23,12 @@ export default function Layout({ children }) {
             {/*    <meta name="twitter:description" content={pageDescription} />*/}
             {/*    <meta name="twitter:image" content={pageOgImage} />*/}
             {/*</Head>*/}
-            <div className="flex min-h-screen flex-col">
+            <div className="flex flex-col">
                 <Navbar />
                 <main className="flex-grow">{children}</main>
+
+                <ToastManager />
+
                 <Footer />
             </div>
         </>

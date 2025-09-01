@@ -11,7 +11,7 @@ use App\Http\Controllers\FreelancerController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified', 'verify_active_session'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 	Route::get('posts/{id}', [PostController::class, 'show'])->name('posts.show');
 
 	Route::resource('roles', RoleController::class);

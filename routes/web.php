@@ -5,7 +5,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeerController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\JobController;
-use App\Http\Controllers\MicroTaskCategoryController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -16,31 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(FrontendController::class)->group(function () {
 	Route::get('/', 'index')->name('home');
-	Route::get('/about', 'about')->name('about');
-
-	Route::get('/how-it-works', 'howItWorks')->name('how-it-works');
-	Route::get('/pricing', 'pricing')->name('pricing');
-
-	// need to move later 
-	Route::get('/employeeDashboard', 'employeeDashboard')->name('employeeDashoard');
-	Route::get('/employeeJobsList', 'EmployeeJobsList')->name('jobList');
-	Route::get('/JobDetails', 'EmployeeJobDetails')->name('details');
-	// auth Route 
-	Route::get('/loginEx', 'FreelancerLogin')->name('loginEx');
-	Route::get('/SignUp', 'SignupPage')->name('page-signup');
-	Route::get('/ForgotPassword', 'ForgotPasswordPage')->name('ForgotPassword');
-	Route::get('/OTPVerification', 'OTPVerificationPage')->name('OTPVerification');
-
-	// 
-	Route::get('/postJobs', 'JobPostingForm')->name('postJobs');
-	Route::get('/SearchPage', 'SearchPage')->name('SearchPage');
-	Route::get('/categorySearch', 'categorySearch')->name('categorySearch');
-	Route::get('/submit', 'SubmitTask')->name('submitTask');
-	Route::get('/upload', 'upload')->name('upload');
-	Route::get('/AccountSettings', 'AccountSettings')->name('setting');
-
-	//  employee Dashboard
-
+	Route::get('/client/dashboard', 'clientDashboard')->name('clientDashboa');
 });
 
 

@@ -75,55 +75,12 @@ class User extends Authenticatable
 		'is_banned' => 'boolean',
 	];
 
-	/**
-	 * Get the freelancer profile associated with the user.
-	 */
-	public function freelancer(): HasOne {
-		return $this->hasOne(Freelancer::class);
-	}
 
-	/**
-	 * Get the employer profile associated with the user.
-	 */
-	public function employer(): HasOne {
-		return $this->hasOne(Employer::class);
-	}
 
 	public function location() {
 		return $this->hasOne(UserLocation::class);
 	}
 
-	public function professionalDetail() {
-		return $this->hasOne(FreelancerProfessionalDetail::class);
-	}
-
-	/**
-	 * Get the user that referred this user.
-	 */
-	public function referrer(): BelongsTo {
-		return $this->belongsTo(__CLASS__, 'referred_by');
-	}
-
-	/**
-	 * Get the users referred by this user.
-	 */
-	public function referrals(): HasMany {
-		return $this->hasMany(__CLASS__, 'referred_by');
-	}
-
-	/**
-	 * Determine if the user is a freelancer.
-	 */
-	public function isFreelancer(): bool {
-		return $this->role === 'freelancer';
-	}
-
-	/**
-	 * Determine if the user is an employer.
-	 */
-	public function isEmployer(): bool {
-		return $this->role === 'employer';
-	}
 
 	/**
 	 * Determine if the user is an admin.
@@ -152,51 +109,6 @@ class User extends Authenticatable
 	 */
 	public function likedBlogs(): BelongsToMany {
 		return $this->belongsToMany(Blog::class, 'blog_likes', 'user_id', 'blog_id')->withTimestamps();
-	}
-
-
-	/**
-	 * Get the micro tasks created by this user (as an employer)
-	 */
-	public function createdMicroTasks(): HasMany {
-		return $this->hasMany(MicroTask::class, 'employer_id');
-	}
-
-	/**
-	 * Get the micro task completions by this user
-	 */
-	public function microTaskCompletions(): HasMany {
-		return $this->hasMany(MicroTaskSubmission::class);
-	}
-
-	/**
-	 * Get micro tasks completed by this user
-	 */
-	public function completedMicroTasks(): BelongsToMany {
-		return $this->belongsToMany(MicroTask::class, 'micro_task_completions')
-			->withPivot('status', 'points_awarded', 'proof_of_completion', 'rejection_reason')
-			->withTimestamps();
-	}
-
-	/**
-	 * Get approved micro task completions
-	 */
-	public function approvedCompletions(): HasMany {
-		return $this->hasMany(MicroTaskSubmission::class)->where('status', 'approved');
-	}
-
-	/**
-	 * Get rejected micro task completions
-	 */
-	public function rejectedCompletions(): HasMany {
-		return $this->hasMany(MicroTaskSubmission::class)->where('status', 'rejected');
-	}
-
-	/**
-	 * Get pending micro task completions
-	 */
-	public function pendingCompletions(): HasMany {
-		return $this->hasMany(MicroTaskSubmission::class)->where('status', 'pending');
 	}
 
 

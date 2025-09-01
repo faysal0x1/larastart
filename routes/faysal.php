@@ -2,17 +2,8 @@
 
 
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\Web\FreelancerProfilerController;
 use App\Http\Controllers\Web\WebController;
 use Illuminate\Support\Facades\Route;
-
-//use App\Http\Controllers\ProfileController;
-
-Route::get('/post-job', [WebController::class, 'postJobPage'])
-	->name('post-job');
-
-Route::post('/post-jobs', [WebController::class, 'postJob'])
-	->name('post-jobs');
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
