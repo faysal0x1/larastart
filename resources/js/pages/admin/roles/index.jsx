@@ -1,6 +1,6 @@
 import ActionsDropdown from '@/components/ActionsDropdown';
 import ListingPage from '@/components/ListingPage';
-import { createActionsColumn, createColumn, createDateColumn, createTagsColumn } from '@/utils/tableUtils';
+import { column, createActionsColumn, createColumn, createDateColumn, createTagsColumn } from '@/utils/tableUtils';
 import { Link, usePage } from '@inertiajs/react';
 
 export default function RolesIndex() {
@@ -28,14 +28,31 @@ export default function RolesIndex() {
 
 
         createDateColumn('created_at', 'Created'),
-        createActionsColumn((row) => (
+
+        column('actions', 'Actions', (item) => (
             <ActionsDropdown
-                item={row.original}
-                routes={{
-                    view: (id) => route('roles.show', id),
-                    edit: (id) => route('roles.edit', id),
-                    delete: (id) => route('roles.destroy', id),
-                }}
+                item={item}
+                actions={[
+                    {
+                        type: 'view',
+                        label: 'View',
+                        route: (id) => route('roles.show', id),
+                        // permission: 'quiz.view'
+                    },
+                    {
+                        type: 'edit',
+                        label: 'Edit',
+                        route: (id) => route('roles.edit', id),
+                        // permission: 'quiz.edit'
+                    },
+                    {
+                        type: 'delete',
+                        label: 'Delete',
+                        route: (id) => route('roles.destroy', id),
+                        method: 'delete',
+                        // permission: 'quiz.delete'
+                    },
+                ]}
             />
         )),
     ];

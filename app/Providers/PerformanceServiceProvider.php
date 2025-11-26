@@ -1,10 +1,10 @@
 <?php
-
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class PerformanceServiceProvider extends ServiceProvider
 {
@@ -13,7 +13,7 @@ class PerformanceServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Do not force Redis; honor configured default
     }
 
     /**
@@ -32,9 +32,6 @@ class PerformanceServiceProvider extends ServiceProvider
             $view->with('appUrl', config('app.url'));
         });
 
-        // Optimize database queries
-        if ($this->app->environment('production')) {
-            \DB::connection()->enableQueryLog();
-        }
+        //
     }
-} 
+}

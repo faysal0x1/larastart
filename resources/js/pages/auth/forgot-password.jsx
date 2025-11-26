@@ -1,14 +1,8 @@
 import { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Check, Eye, EyeOff, Key, Loader2, Lock, Mail } from 'lucide-react';
 import { router } from '@inertiajs/react';
+import { ArrowLeft, Check, Eye, EyeOff, Key, Lock, Mail, ShoppingBag } from 'lucide-react';
 
 const ForgotPasswordPage = () => {
-    // resend otp
-    const [otpResendCount, setOtpResendCount] = useState(0);
-    const [canResendOtp, setCanResendOtp] = useState(true);
-    const [resendTimer, setResendTimer] = useState(0);
-    // end
     const [email, setEmail] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [currentStep, setCurrentStep] = useState(1); // 1 = Email input, 2 = Success, 3 = OTP verification, 4 = Reset form
@@ -16,8 +10,10 @@ const ForgotPasswordPage = () => {
     const [newPassword, setNewPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [resetMethod, setResetMethod] = useState('');
-
     const [errors, setErrors] = useState({});
+    const [otpResendCount, setOtpResendCount] = useState(0);
+    const [canResendOtp, setCanResendOtp] = useState(true);
+    const [resendTimer, setResendTimer] = useState(0);
 
     const handleSubmitEmail = (e) => {
         e.preventDefault();
@@ -117,168 +113,104 @@ const ForgotPasswordPage = () => {
         }
     };
 
-    // Animation variants
-    const container = {
-        hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-            },
-        },
-    };
-
-    const item = {
-        hidden: { y: 20, opacity: 0 },
-        show: { y: 0, opacity: 1 },
-    };
-
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-100 p-4">
-            {/* Animated background elements */}
-            <div className="absolute inset-0 overflow-hidden">
-                {[...Array(10)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{
-                            x: Math.random() * 100,
-                            y: Math.random() * 100,
-                            opacity: 0.2,
-                            scale: Math.random() * 0.5 + 0.5,
-                        }}
-                        animate={{
-                            x: [null, Math.random() * 100],
-                            y: [null, Math.random() * 100],
-                            transition: {
-                                duration: Math.random() * 15 + 10,
-                                repeat: Infinity,
-                                repeatType: 'reverse',
-                            },
-                        }}
-                        className="absolute rounded-full bg-blue-400/20"
-                        style={{
-                            width: `${Math.random() * 10 + 5}px`,
-                            height: `${Math.random() * 10 + 5}px`,
-                        }}
-                    />
-                ))}
+        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="flex justify-center">
+                    <ShoppingBag className="h-12 w-12 text-indigo-600" />
+                </div>
+                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Reset Your Password
+                </h2>
             </div>
 
-            {/* Main card */}
-            <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="z-10 w-full max-w-md overflow-hidden rounded-2xl bg-white/90 shadow-xl backdrop-blur-sm"
-            >
-                <AnimatePresence mode="wait">
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                     {/* Step 1: Email Input */}
                     {currentStep === 1 && (
-                        <motion.div key="email-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-8">
-                            <div className="mb-8 text-center">
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ type: 'spring', stiffness: 200 }}
-                                    className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100"
-                                >
-                                    <Key className="h-8 w-8 text-blue-600" />
-                                </motion.div>
-                                <h1 className="text-2xl font-bold text-gray-800">Forgot Password?</h1>
-                                <p className="mt-2 text-gray-500">Enter your email to receive a reset OTP and link</p>
-                            </div>
-
-                            <motion.form variants={container} initial="hidden" animate="show" onSubmit={handleSubmitEmail} className="space-y-6">
-                                <motion.div variants={item}>
-                                    <div className="relative">
-                                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <div>
+                            <p className="mb-6 text-center text-sm text-gray-600">
+                                Enter your email to receive a password reset OTP and link
+                            </p>
+                            
+                            <form onSubmit={handleSubmitEmail} className="space-y-6">
+                                <div>
+                                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                                        Email address
+                                    </label>
+                                    <div className="mt-1 relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <Mail className="h-5 w-5 text-gray-400" />
                                         </div>
                                         <input
+                                            id="email"
+                                            name="email"
                                             type="email"
-                                            placeholder="Your email address"
-                                            className="w-full rounded-lg border border-gray-300 py-3 pr-4 pl-10 transition-all duration-200 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            autoComplete="email"
+                                            required
+                                            className={`block w-full pl-10 pr-3 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                                            placeholder="Enter your email address"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            required
                                         />
                                     </div>
-                                </motion.div>
+                                    {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email}</p>}
+                                </div>
 
-                                <motion.div variants={item}>
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
+                                <div>
+                                    <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className={`flex w-full items-center justify-center rounded-lg border border-transparent px-4 py-3 font-medium text-white shadow-sm transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none ${
-                                            isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
-                                        }`}
+                                        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-md transition-all duration-200"
                                     >
                                         {isSubmitting ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Sending...
-                                            </>
-                                        ) : (
-                                            'Send OTP & Reset Link'
-                                        )}
-                                    </motion.button>
-                                </motion.div>
-                            </motion.form>
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        ) : null}
+                                        {isSubmitting ? 'Sending...' : 'Send OTP & Reset Link'}
+                                    </button>
+                                </div>
+                            </form>
 
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-6 text-center">
+                            <div className="mt-6 text-center">
                                 <button
                                     onClick={() => window.history.back()}
-                                    className="mx-auto flex items-center justify-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-500"
+                                    className="flex items-center justify-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 mx-auto"
                                 >
                                     <ArrowLeft className="h-4 w-4" />
                                     Back to login
                                 </button>
-                            </motion.div>
-                        </motion.div>
+                            </div>
+                        </div>
                     )}
 
                     {/* Step 2: Email Sent Confirmation with Options */}
                     {currentStep === 2 && (
-                        <motion.div
-                            key="success-step"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="p-8 text-center"
-                        >
-                            <motion.div
-                                animate={{
-                                    rotate: [0, 10, -10, 0],
-                                    scale: [1, 1.1, 1],
-                                }}
-                                transition={{ duration: 0.5 }}
-                                className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100"
-                            >
-                                <Check className="h-10 w-10 text-green-600" />
-                            </motion.div>
-                            <h2 className="mb-2 text-2xl font-bold text-gray-800">Check Your Email!</h2>
-                            <p className="mb-6 text-gray-600">
+                        <div className="text-center">
+                            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                                <Check className="h-6 w-6 text-green-600" />
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-900">Check Your Email!</h3>
+                            <p className="mt-2 text-sm text-gray-600">
                                 We've sent a 6-digit OTP and a password reset link to <span className="font-medium">{email}</span>.
                             </p>
 
-                            <div className="mb-6 space-y-4">
-                                <motion.button
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="w-full rounded-lg bg-blue-600 py-3 text-white"
+                            <div className="mt-6 space-y-4">
+                                <button
+                                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                     onClick={() => {
                                         setResetMethod('otp');
                                         setCurrentStep(3);
                                     }}
                                 >
                                     Verify OTP
-                                </motion.button>
+                                </button>
 
                                 <p className="text-sm text-gray-500">OR</p>
 
-                                <div className="rounded-lg bg-blue-50 p-4 text-left">
+                                <div className="rounded-lg bg-blue-50 p-3 text-left">
                                     <p className="text-sm text-blue-800">
                                         <strong>Prefer to use the link?</strong> Check your inbox for the password reset link.
                                         <br />
@@ -292,86 +224,73 @@ const ForgotPasswordPage = () => {
 
                             <button
                                 onClick={() => setCurrentStep(1)}
-                                className="mx-auto flex items-center justify-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-500"
+                                className="mt-4 flex items-center justify-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 mx-auto"
                             >
                                 <ArrowLeft className="h-4 w-4" />
                                 Back to email input
                             </button>
-                        </motion.div>
+                        </div>
                     )}
 
                     {/* Step 3: OTP Verification */}
-                    {/* {currentStep === 3 && (
-            <motion.div
-              key="otp-step"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="p-8"
-            > */}
-                    {/* // Update the OTP verification step to include the resend functionality */}
                     {currentStep === 3 && (
-                        <motion.div key="otp-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-8">
+                        <div>
                             <button
                                 onClick={() => setCurrentStep(2)}
-                                className="mb-6 flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-500"
+                                className="mb-4 flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500"
                             >
                                 <ArrowLeft className="h-4 w-4" />
                                 Back
                             </button>
 
-                            <div className="mb-8 text-center">
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ type: 'spring' }}
-                                    className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100"
-                                >
-                                    <Key className="h-8 w-8 text-blue-600" />
-                                </motion.div>
-                                <h1 className="text-2xl font-bold text-gray-800">Verify OTP</h1>
-                                <p className="mt-2 text-gray-500">Enter the 6-digit code sent to {email}</p>
+                            <div className="mb-6 text-center">
+                                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                                    <Key className="h-6 w-6 text-blue-600" />
+                                </div>
+                                <h3 className="text-lg font-medium text-gray-900">Verify OTP</h3>
+                                <p className="text-sm text-gray-600">Enter the 6-digit code sent to {email}</p>
                             </div>
 
-                            <motion.form variants={container} initial="hidden" animate="show" onSubmit={handleVerifyOtp} className="space-y-6">
-                                <motion.div variants={item}>
-                                    <div className="relative">
-                                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <form onSubmit={handleVerifyOtp} className="space-y-6">
+                                <div>
+                                    <label htmlFor="otp" className="block text-sm font-medium text-gray-700">
+                                        OTP Code
+                                    </label>
+                                    <div className="mt-1 relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <Key className="h-5 w-5 text-gray-400" />
                                         </div>
                                         <input
+                                            id="otp"
+                                            name="otp"
                                             type="text"
-                                            placeholder="6-digit OTP"
-                                            className="w-full rounded-lg border border-gray-300 py-3 pr-4 pl-10 transition-all duration-200 focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                                            value={otp}
-                                            onChange={(e) => setOtp(e.target.value)}
                                             maxLength={6}
                                             required
+                                            className={`block w-full pl-10 pr-3 py-2 border ${errors.otp ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                                            placeholder="6-digit OTP"
+                                            value={otp}
+                                            onChange={(e) => setOtp(e.target.value)}
                                         />
                                     </div>
-                                </motion.div>
+                                    {errors.otp && <p className="mt-2 text-sm text-red-600">{errors.otp}</p>}
+                                </div>
 
-                                <motion.div variants={item}>
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
+                                <div>
+                                    <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className={`flex w-full items-center justify-center rounded-lg border border-transparent px-4 py-3 font-medium text-white shadow-sm transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none ${
-                                            isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
-                                        }`}
+                                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                     >
                                         {isSubmitting ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Verifying...
-                                            </>
-                                        ) : (
-                                            'Verify & Continue'
-                                        )}
-                                    </motion.button>
-                                </motion.div>
-                            </motion.form>
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        ) : null}
+                                        {isSubmitting ? 'Verifying...' : 'Verify & Continue'}
+                                    </button>
+                                </div>
+                            </form>
 
                             <div className="mt-4 text-center text-sm text-gray-500">
                                 {canResendOtp ? (
@@ -380,7 +299,7 @@ const ForgotPasswordPage = () => {
                                         <button
                                             onClick={resendOTP}
                                             disabled={isSubmitting}
-                                            className="font-medium text-blue-600 hover:underline disabled:text-gray-400"
+                                            className="font-medium text-indigo-600 hover:underline disabled:text-gray-400"
                                         >
                                             {isSubmitting ? 'Sending...' : 'Resend OTP'}
                                         </button>
@@ -394,117 +313,100 @@ const ForgotPasswordPage = () => {
                                     </div>
                                 )}
                             </div>
-                        </motion.div>
+                        </div>
                     )}
 
                     {/* Step 4: Password Reset Form */}
                     {currentStep === 4 && (
-                        <motion.div key="reset-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-8">
+                        <div>
                             <button
                                 onClick={() => setCurrentStep(resetMethod === 'otp' ? 3 : 2)}
-                                className="mb-6 flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-500"
+                                className="mb-4 flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500"
                             >
                                 <ArrowLeft className="h-4 w-4" />
                                 Back
                             </button>
 
-                            <div className="mb-8 text-center">
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ type: 'spring' }}
-                                    className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100"
-                                >
-                                    <Lock className="h-8 w-8 text-blue-600" />
-                                </motion.div>
-                                <h1 className="text-2xl font-bold text-gray-800">Reset Password</h1>
-                                <p className="mt-2 text-gray-500">Enter your new password below</p>
+                            <div className="mb-6 text-center">
+                                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                                    <Lock className="h-6 w-6 text-blue-600" />
+                                </div>
+                                <h3 className="text-lg font-medium text-gray-900">Reset Password</h3>
+                                <p className="text-sm text-gray-600">Enter your new password below</p>
                             </div>
 
-                            <motion.form variants={container} initial="hidden" animate="show" onSubmit={handleResetPassword} className="space-y-6">
-                                <motion.div variants={item}>
-                                    <div className="relative">
-                                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <form onSubmit={handleResetPassword} className="space-y-6">
+                                <div>
+                                    <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
+                                        New Password
+                                    </label>
+                                    <div className="mt-1 relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <Lock className="h-5 w-5 text-gray-400" />
                                         </div>
                                         <input
+                                            id="newPassword"
+                                            name="newPassword"
                                             type={showPassword ? 'text' : 'password'}
-                                            placeholder="New password"
-                                            className="w-full rounded-lg border border-gray-300 py-3 pr-10 pl-10 transition-all duration-200 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            autoComplete="new-password"
+                                            required
+                                            className={`block w-full pl-10 pr-10 py-2 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                                            placeholder="Enter new password"
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
-                                            required
                                         />
-                                        <button
-                                            type="button"
-                                            className="absolute inset-y-0 right-0 flex items-center pr-3"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                        >
-                                            {showPassword ? (
-                                                <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                                            ) : (
-                                                <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                                            )}
-                                        </button>
+                                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                            <button
+                                                type="button"
+                                                className="h-5 w-5 text-gray-400 hover:text-gray-500"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            >
+                                                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                            </button>
+                                        </div>
                                     </div>
-                                </motion.div>
+                                    {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password}</p>}
+                                </div>
 
-                                <motion.div variants={item}>
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
+                                <div>
+                                    <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className={`flex w-full items-center justify-center rounded-lg border border-transparent px-4 py-3 font-medium text-white shadow-sm transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none ${
-                                            isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
-                                        }`}
+                                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                     >
                                         {isSubmitting ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Updating...
-                                            </>
-                                        ) : (
-                                            'Reset Password'
-                                        )}
-                                    </motion.button>
-                                </motion.div>
-                            </motion.form>
-                        </motion.div>
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        ) : null}
+                                        {isSubmitting ? 'Updating...' : 'Reset Password'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     )}
 
                     {/* Step 5: Password Reset Success */}
                     {currentStep === 5 && (
-                        <motion.div
-                            key="reset-success"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="p-8 text-center"
-                        >
-                            <motion.div
-                                animate={{
-                                    rotate: [0, 10, -10, 0],
-                                    scale: [1, 1.2, 1],
-                                }}
-                                transition={{ duration: 0.6 }}
-                                className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100"
-                            >
-                                <Check className="h-10 w-10 text-green-600" />
-                            </motion.div>
-                            <h2 className="mb-2 text-2xl font-bold text-gray-800">Password Updated!</h2>
-                            <p className="mb-6 text-gray-600">Your password has been successfully reset.</p>
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="rounded-lg bg-blue-600 px-6 py-2 text-white"
-                                onClick={() => (window.location.href = '/loginEx')} // Redirect to login
-                            >
-                                Back to Login
-                            </motion.button>
-                        </motion.div>
+                        <div className="text-center">
+                            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                                <Check className="h-6 w-6 text-green-600" />
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-900">Password Updated!</h3>
+                            <p className="mt-2 text-sm text-gray-600">Your password has been successfully reset.</p>
+                            <div className="mt-6">
+                                <button
+                                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    onClick={() => (window.location.href = '/login')}
+                                >
+                                    Back to Login
+                                </button>
+                            </div>
+                        </div>
                     )}
-                </AnimatePresence>
-            </motion.div>
+                </div>
+            </div>
         </div>
     );
 };

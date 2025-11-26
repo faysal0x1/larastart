@@ -1,14 +1,42 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback, memo } from 'react';
 import { getImageUrl } from '../utils/imageUtils';
+import { getCachedImageUrl } from '../utils/imageCache';
 
-const LazyImage = ({ src, alt, className, onLoad }) => {
+const LazyImage = memo(({
+    src,
+    alt = 'Image',
+    className = '',
+    onLoad,
+    onError,
+    placeholder = null,
+    fallback = null,
+    rootMargin = '200px',
+    threshold = 0.1,
+    objectFit = 'contain',
+    showShimmer = true,
+    updatedAt = null, // Add updatedAt prop for cache busting
+    ...props
+}) => {
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
+    const [inView, setInView] = useState(false);
     const imgRef = useRef();
     const observerRef = useRef();
 
-    // Check if src is provided and get full URL
-    const fullImageUrl = src ? getImageUrl(src) : null;
+    // Check if src is provided and get cached URL
+    const fullImageUrl = src ? getCachedImageUrl(getImageUrl(src), updatedAt) : null;
+
+    // Memoized error handler
+    const handleError = useCallback(() => {
+        setError(true);
+        onError?.();
+    }, [onError]);
+
+    // Memoized load handler
+    const handleLoad = useCallback(() => {
+        setLoaded(true);
+        onLoad?.();
+    }, [onLoad]);
 
     useEffect(() => {
         // If no image URL is available, set error state immediately
@@ -17,22 +45,24 @@ const LazyImage = ({ src, alt, className, onLoad }) => {
             return;
         }
 
+        // If already loaded or error, don't set up observer
+        if (loaded || error) return;
+
         observerRef.current = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting && !loaded && !error) {
+                    setInView(true);
                     const img = new Image();
                     img.src = fullImageUrl;
-                    img.onload = () => {
-                        setLoaded(true);
-                        onLoad?.();
-                    };
-                    img.onerror = () => {
-                        setError(true);
-                    };
+                    img.onload = handleLoad;
+                    img.onerror = handleError;
                     observerRef.current?.disconnect();
                 }
             },
-            { rootMargin: '200px' }
+            {
+                rootMargin,
+                threshold
+            }
         );
 
         if (imgRef.current) {
@@ -42,10 +72,27 @@ const LazyImage = ({ src, alt, className, onLoad }) => {
         return () => {
             observerRef.current?.disconnect();
         };
-    }, [fullImageUrl, loaded, error, onLoad]);
+    }, [fullImageUrl, loaded, error, handleLoad, handleError, rootMargin, threshold]);
 
-    // If no image source is provided or there's an error
+    // Custom placeholder
+    if (placeholder && !loaded && !error) {
+        return (
+            <div ref={imgRef} className={`${className} relative`}>
+                {placeholder}
+            </div>
+        );
+    }
+
+    // Error state with custom fallback
     if (error || !src) {
+        if (fallback) {
+            return (
+                <div className={`${className} relative`}>
+                    {fallback}
+                </div>
+            );
+        }
+
         return (
             <div className={`${className} bg-gray-50 flex items-center justify-center text-gray-400`}>
                 <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
@@ -58,23 +105,24 @@ const LazyImage = ({ src, alt, className, onLoad }) => {
     return (
         <div ref={imgRef} className={`${className} relative`}>
             {/* Shimmer placeholder */}
-            {!loaded && (
+            {!loaded && !error && showShimmer && (
                 <div className="absolute inset-0 bg-gray-100 overflow-hidden">
                     <div className="absolute inset-0 shimmer-animation"></div>
                 </div>
             )}
 
             {/* Loaded image */}
-            {loaded && (
+            {loaded && inView && (
                 <img
                     src={fullImageUrl}
                     alt={alt}
-                    className={`${className} w-full h-full object-contain transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+                    className={`w-full h-full object-${objectFit} transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
                     loading="lazy"
+                    {...props}
                 />
             )}
         </div>
     );
-};
+});
 
 export default LazyImage;

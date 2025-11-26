@@ -1,4 +1,7 @@
 <?php
+
+declare (strict_types = 1);
+
 namespace App\Traits;
 
 use Illuminate\Support\Facades\Storage;
@@ -6,23 +9,23 @@ use Illuminate\Support\Facades\Storage;
 trait HasImageUrl
 {
     /**
-     * The default name of the image column in the database.
+     * The name of the image column in the database.
      * Override this in your model if needed.
      */
-    protected string $imageColumnName = 'image';
+    protected string $imageColumn = 'image';
 
     /**
      * Get the full public URL for the image
      */
     public function getImageUrlAttribute(): ?string
     {
-        $columnName = $this->imageColumnName;
+        $column = $this->imageColumn ?? 'image';
 
-        if (! $this->{$columnName}) {
+        if (! $this->{$column}) {
             return null;
         }
 
-        return Storage::disk('public')->url($this->{$columnName});
+        return Storage::disk('public')->url($this->{$column});
     }
 
     /**
@@ -30,8 +33,8 @@ trait HasImageUrl
      */
     public function hasImage(): bool
     {
-        $columnName = $this->imageColumnName;
+        $column = $this->imageColumn ?? 'image';
 
-        return $this->{$columnName} && Storage::disk('public')->exists($this->{$columnName});
+        return $this->{$column} && Storage::disk('public')->exists($this->{$column});
     }
 }

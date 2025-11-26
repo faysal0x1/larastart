@@ -6,6 +6,7 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
 @custom-variant dark (&:is(.dark *));
+
 :root {
 
     --gradient-color-1: #4f46e5;
@@ -13,11 +14,21 @@
     --gradient-color-3: #db2777;
     --gradient-direction: 135deg;
 
+    /* ============================ */
 
     --color-primary: #4F46E5;
     --color-secondary: #10B981;
     --color-dark: #1F2937;
     --color-light: #F9FAFB;
+
+    /* Dark Mode color   */
+    --color-darkPrimary: #101828;
+    --color-darkSecondary: #1D293D;
+    --color-darkInput: #314158;
+    --color-darkText: #ffffff;
+
+
+
     --radius: 0.625rem;
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
@@ -68,11 +79,11 @@
     /* start color */
     --color-primary: #4F46E5;
     --color-secondary: #10B981;
-    --color-dark: #1F2937;
+    /* --color-dark: #1F2937; */
     --color-light: #F9FAFB;
     /* end color */
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        'Open Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -175,13 +186,16 @@
         @apply border-border;
     }
 
+    html,
     body {
         @apply bg-background text-foreground;
+        font-family: 'Open Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !important;
     }
 }
 
+html,
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Open Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !important;
 }
 
 .bg-gradient {
@@ -196,11 +210,32 @@ body {
     @apply bg-primary text-white px-6 py-2 rounded-md font-medium hover:bg-primary/90;
 }
 
-.gradient{
+.gradient {
     /* width: 5001px; */
     /* height: 3335px; */
     background: linear-gradient(var(--gradient-direction),
             var(--gradient-color-1),
             var(--gradient-color-2),
             var(--gradient-color-3));
+}
+
+/* LazyImage Shimmer Animation */
+.shimmer-animation {
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.2) 20%,
+            rgba(255, 255, 255, 0.5) 60%,
+            rgba(255, 255, 255, 0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
 }

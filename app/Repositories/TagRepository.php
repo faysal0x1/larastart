@@ -1,12 +1,12 @@
 <?php
+
 // app/Repositories/TagRepository.php
 
 namespace App\Repositories;
 
 use App\Models\Tag;
-use App\Repositories\Interfaces\TagRepositoryInterface;
 
-class TagRepository extends BaseRepository implements TagRepositoryInterface
+class TagRepository extends BaseRepository
 {
     public function __construct(Tag $model)
     {
@@ -20,6 +20,6 @@ class TagRepository extends BaseRepository implements TagRepositoryInterface
 
     protected function getSortableFields(): array
     {
-        return ['name', 'created_at'];
+        return ['name', 'slug', 'status'];
     }
 }

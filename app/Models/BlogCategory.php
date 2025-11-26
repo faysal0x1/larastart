@@ -2,27 +2,15 @@
 
 namespace App\Models;
 
-use App\Traits\SlugGenerator;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-class BlogCategory extends Model
+/**
+ * @deprecated Use App\Modules\Blog\Models\BlogCategory instead
+ * This class is kept for backward compatibility only.
+ * 
+ * @see \App\Modules\Blog\Models\BlogCategory
+ */
+class BlogCategory extends \App\Modules\Blog\Models\BlogCategory
 {
-	use SlugGenerator, SoftDeletes;
-
-	protected $fillable = [
-		'name',
-		'slug',
-		'description',
-		'status',
-		'order'
-	];
-
-	/**
-	 * Get all blogs that belong to this category
-	 */
-	public function blogs(): HasMany {
-		return $this->hasMany(Blog::class);
-	}
+    // This class is an alias for backward compatibility
+    // All functionality is provided by the module model
 }
+

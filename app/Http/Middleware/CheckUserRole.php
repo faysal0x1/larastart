@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use Closure;
@@ -16,14 +15,13 @@ class CheckUserRole
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 
-
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             toastError("You are not logged in");
             return redirect()->route('login');
         }

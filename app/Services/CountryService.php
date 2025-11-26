@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Repositories\CountryRepository;
+use App\Modules\Location\Repositories\CountryRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;

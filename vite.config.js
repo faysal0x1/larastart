@@ -25,7 +25,22 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'resources/js'),
+            '@modules': path.resolve(__dirname, 'app/Modules'),
             'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
+        },
+    },
+    publicDir: 'public',
+    build: {
+        rollupOptions: {
+            output: {
+                // Ensure TinyMCE assets are properly handled
+                assetFileNames: (assetInfo) => {
+                    if (assetInfo.name && assetInfo.name.includes('tinymce')) {
+                        return 'assets/tinymce/[name]-[hash][extname]';
+                    }
+                    return 'assets/[name]-[hash][extname]';
+                },
+            },
         },
     },
 });

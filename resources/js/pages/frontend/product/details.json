@@ -1,0 +1,175 @@
+{
+    "products": {
+        "id": 1156,
+        "brand_id": 30,
+        "category_id": 1,
+        "subcategory_id": 1,
+        "name": "Himu",
+        "slug": "himu",
+        "type": null,
+        "sku": "RTX-DES-DEN-RTX-8790",
+        "qty": "22",
+        "tags": "html",
+        "size": null,
+        "stock": null,
+        "unit_price": 100,
+        "discount_type": "percent",
+        "discount_price": "5",
+        "product_tax": null,
+        "tax_calculation": null,
+        "final_price": "95.00",
+        "short_descp": "<p><span data-huuid="8618103608283302784">A long description, also known as an extended description, is&nbsp;<mark class="QVRyCf">a detailed, text-based explanation of complex visual content, like charts, graphs, or diagrams, for users who cannot see the image</mark>.&nbsp;</span><span data-huuid="8618103608283302327">It provides the essential information contained in the complex image, as a simple alternative text (alt-text) would be insufficient.&nbsp;</span><span data-huuid="8618103608283301870">Long descriptions are a key accessibility feature to ensure that all users can access and understand the information presented in complex visuals, according to the W3C's&nbsp;<span class="M5tQyf"><a class="DTlJ6d" href="https: //www.google.com/search?sca_esv=e4a4ee516c334649&amp;cs=0&amp;sxsrf=AE3TifNNJZvHWBfVMNdovdewcpMRp30j3g%3A1758970930291&amp;q=Web+Content+Accessibility+Guidelines+%28WCAG%29&amp;sa=X&amp;ved=2ahUKEwiKl72r5fiPAxWC2TgGHfWePMAQxccNegQICBAB&amp;mstk=AUtExfD_17Wp0Pb2HtEFvRlYJhBrdluhsDwjGLS7KCjo8r_Zf0WZTb-vlFB6d0HJ6kyXzCtxRl_EpWAdagYIYs9U9N8UVncr_zJRVHNznXn2dLYgaPdcVbUvXcKSQLfMNmJKyA2PjTxYpYeNyMCvZGiSGpYzjBCSbnGQRdlq3Uk4m9JJ08ZZrgHiQkiqG8CyD-dTQUfpjjzU0QjogPge3YtOGEiQzYy5uaR0qSFBwd05kVVHx91w6_wMDertH4uE3oanOOZfS9a3Mpd401QorRLR9acG&amp;csui=3" target="_blank" rel="noopener" data-hveid="CAgQAQ">Web Content Accessibility Guidelines (WCAG)</a>.</span><span class="UV3uM">&nbsp;</span></span></p>",
+        "long_descp": "<p style="text-align: center;"><strong><span data-huuid="8618103608283302784">A long description, also known as an extended description, is&nbsp;<mark class="QVRyCf">a detailed, text-based explanation of complex visual content, like charts, graphs, or diagrams, for users who cannot see the image</mark>.&nbsp;</span><span data-huuid="8618103608283302327">It provides the essential information contained in the complex image, as a simple alternative text (alt-text) would be insufficient.&nbsp;</span><span data-huuid="8618103608283301870">Long descriptions are a key accessibility feature to ensure that all users can access and understand the information presented in complex visuals, according to the W3C's&nbsp;<span class="M5tQyf"><a class="DTlJ6d" href="https: //www.google.com/search?sca_esv=e4a4ee516c334649&amp;cs=0&amp;sxsrf=AE3TifNNJZvHWBfVMNdovdewcpMRp30j3g%3A1758970930291&amp;q=Web+Content+Accessibility+Guidelines+%28WCAG%29&amp;sa=X&amp;ved=2ahUKEwiKl72r5fiPAxWC2TgGHfWePMAQxccNegQICBAB&amp;mstk=AUtExfD_17Wp0Pb2HtEFvRlYJhBrdluhsDwjGLS7KCjo8r_Zf0WZTb-vlFB6d0HJ6kyXzCtxRl_EpWAdagYIYs9U9N8UVncr_zJRVHNznXn2dLYgaPdcVbUvXcKSQLfMNmJKyA2PjTxYpYeNyMCvZGiSGpYzjBCSbnGQRdlq3Uk4m9JJ08ZZrgHiQkiqG8CyD-dTQUfpjjzU0QjogPge3YtOGEiQzYy5uaR0qSFBwd05kVVHx91w6_wMDertH4uE3oanOOZfS9a3Mpd401QorRLR9acG&amp;csui=3" target="_blank" rel="noopener" data-hveid="CAgQAQ">Web Content Accessibility Guidelines (WCAG)</a>.</span><span class="UV3uM">&nbsp;</span></span></strong></p> <p style="text-align: center;">&nbsp;</p> <p style="text-align: left;"><strong><span data-huuid="8618103608283301870"><span class="UV3uM"><span data-huuid="8618103608283302784">A long description, also known as an extended description, is&nbsp;<mark class="QVRyCf">a detailed, text-based explanation of complex visual content, like charts, graphs, or diagrams, for users who cannot see the image</mark>.&nbsp;</span><span data-huuid="8618103608283302327">It provides the essential information contained in the complex image, as a simple alternative text (alt-text) would be insufficient.&nbsp;</span><span data-huuid="8618103608283301870">Long descriptions are a key accessibility feature to ensure that all users can access and understand the information presented in complex visuals, according to the W3C's&nbsp;<span class="M5tQyf"><a class="DTlJ6d" href="https://www.google.com/search?sca_esv=e4a4ee516c334649&amp;cs=0&amp;sxsrf=AE3TifNNJZvHWBfVMNdovdewcpMRp30j3g%3A1758970930291&amp;q=Web+Content+Accessibility+Guidelines+%28WCAG%29&amp;sa=X&amp;ved=2ahUKEwiKl72r5fiPAxWC2TgGHfWePMAQxccNegQICBAB&amp;mstk=AUtExfD_17Wp0Pb2HtEFvRlYJhBrdluhsDwjGLS7KCjo8r_Zf0WZTb-vlFB6d0HJ6kyXzCtxRl_EpWAdagYIYs9U9N8UVncr_zJRVHNznXn2dLYgaPdcVbUvXcKSQLfMNmJKyA2PjTxYpYeNyMCvZGiSGpYzjBCSbnGQRdlq3Uk4m9JJ08ZZrgHiQkiqG8CyD-dTQUfpjjzU0QjogPge3YtOGEiQzYy5uaR0qSFBwd05kVVHx91w6_wMDertH4uE3oanOOZfS9a3Mpd401QorRLR9acG&amp;csui=3" target="_blank" rel="noopener" data-hveid="CAgQAQ">Web Content Accessibility Guidelines (WCAG)</a>.</span> <span data-huuid="8618103608283302784">A long description, also known as an extended description, is&nbsp;<mark class="QVRyCf">a detailed, text-based explanation of complex visual content, like charts, graphs, or diagrams, for users who cannot see the image</mark>.&nbsp;</span><span data-huuid="8618103608283302327">It provides the essential information contained in the complex image, as a simple alternative text (alt-text) would be insufficient.&nbsp;</span><span data-huuid="8618103608283301870">Long descriptions are a key accessibility feature to ensure that all users can access and understand the information presented in complex visuals, according to the W3C's&nbsp;<span class="M5tQyf"><a class="DTlJ6d" href="https://www.google.com/search?sca_esv=e4a4ee516c334649&amp;cs=0&amp;sxsrf=AE3TifNNJZvHWBfVMNdovdewcpMRp30j3g%3A1758970930291&amp;q=Web+Content+Accessibility+Guidelines+%28WCAG%29&amp;sa=X&amp;ved=2ahUKEwiKl72r5fiPAxWC2TgGHfWePMAQxccNegQICBAB&amp;mstk=AUtExfD_17Wp0Pb2HtEFvRlYJhBrdluhsDwjGLS7KCjo8r_Zf0WZTb-vlFB6d0HJ6kyXzCtxRl_EpWAdagYIYs9U9N8UVncr_zJRVHNznXn2dLYgaPdcVbUvXcKSQLfMNmJKyA2PjTxYpYeNyMCvZGiSGpYzjBCSbnGQRdlq3Uk4m9JJ08ZZrgHiQkiqG8CyD-dTQUfpjjzU0QjogPge3YtOGEiQzYy5uaR0qSFBwd05kVVHx91w6_wMDertH4uE3oanOOZfS9a3Mpd401QorRLR9acG&amp;csui=3" target="_blank" rel="noopener" data-hveid="CAgQAQ">Web Content Accessibility Guidelines (WCAG)</a>.</span>&nbsp;</span></span></span></span></strong></p>",
+        "product_thumbnail": "https://tbzapp.test/storage/6921/IMG_20240228_224923.jpg",
+        "hot_deals": 1,
+        "featured": 0,
+        "special_offer": 1,
+        "special_deals": 0,
+        "status": 1,
+        "created_at": "2025-09-27T11:12:25.000000Z",
+        "updated_at": "2025-09-27T11:12:27.000000Z",
+        "specs_by_group": {
+            "Model`": {
+                "Name": "NAme Nai",
+                "DEs": "DEs nsai"
+            },
+            "Warry": {
+                "Warrenty": "1 yr"
+            }
+        },
+        "image_url": "https://tbzapp.test/storage/6921/IMG_20240228_224923.jpg",
+        "brand": {
+            16 items
+        },
+        "product_reviews": [],
+        "category": {
+            22 items
+        },
+        "tag": [
+            1 item
+        ],
+        "sub_category": {
+            8 items
+        },
+        "multi_images": [],
+        "wishlists": [],
+        "color_images": [
+            {
+                "id": 1,
+                "product_id": 1156,
+                "color_attribute_id": 1,
+                "image": "https://tbzapp.test/storage/6922/476786972_488557444302252_7461807629992450726_n.jpg",
+                "created_at": "2025-09-27T11:12:27.000000Z",
+                "updated_at": "2025-09-27T11:12:27.000000Z"
+            },
+            {
+                "id": 2,
+                "product_id": 1156,
+                "color_attribute_id": 3,
+                "image": "https://tbzapp.test/storage/6923/WhatsApp-Image-2023-03-01-at-22.41.33.jpg",
+                "created_at": "2025-09-27T11:12:27.000000Z",
+                "updated_at": "2025-09-27T11:12:27.000000Z"
+            }
+        ],
+        "seo": {
+            "id": 1,
+            "meta_title": "rr",
+            "meta_description": "rrr",
+            "product_id": 1156,
+            "created_at": "2025-09-27T11:12:27.000000Z",
+            "updated_at": "2025-09-27T11:12:27.000000Z"
+        },
+        "variations": [
+            {
+                "id": 1,
+                "product_id": 1156,
+                "name": "hello 1",
+                "sku": "PROD-hello 1",
+                "price": "110.00",
+                "stock": 11,
+                "attributes": "{"H": "hello 1"}",
+                "created_at": "2025-09-27T11:12:27.000000Z",
+                "updated_at": "2025-09-27T11:12:27.000000Z"
+            },
+            {
+                "id": 2,
+                "product_id": 1156,
+                "name": "GHelo 2",
+                "sku": "PROD-GHelo 2",
+                "price": "200.00",
+                "stock": 11,
+                "attributes": "{"H": "GHelo 2"}",
+                "created_at": "2025-09-27T11:12:27.000000Z",
+                "updated_at": "2025-09-27T11:12:27.000000Z"
+            }
+        ],
+        "media": [
+            {
+                "id": 6921,
+                "uuid": "7aa95f63-2d32-4dab-aeaa-8616c1fb2f5c",
+                "model_type": "App\Models\Product",
+                "model_id": 1156,
+                "collection_name": "thumbnail",
+                "name": "IMG_20240228_224923",
+                "file_name": "IMG_20240228_224923.jpg",
+                "mime_type": "image/jpeg",
+                "disk": "public",
+                "conversions_disk": "public",
+                "size": 659077,
+                "manipulations": [],
+                "custom_properties": [],
+                "generated_conversions": [],
+                "responsive_images": [],
+                "order_column": 1,
+                "created_at": "2025-09-27T11:12:27.000000Z",
+                "updated_at": "2025-09-27T11:12:27.000000Z",
+                "original_url": "https://tbzapp.test/storage/6921/IMG_20240228_224923.jpg",
+                "preview_url": ""
+            },
+            {
+                "id": 6922,
+                "uuid": "46cba06d-11cc-48f0-8b47-2a08b1242734",
+                "model_type": "App\Models\Product",
+                "model_id": 1156,
+                "collection_name": "color_images",
+                "name": "476786972_488557444302252_7461807629992450726_n",
+                "file_name": "476786972_488557444302252_7461807629992450726_n.jpg",
+                "mime_type": "image/jpeg",
+                "disk": "public",
+                "conversions_disk": "public",
+                "size": 423239,
+                "manipulations": [],
+                "custom_properties": [],
+                "generated_conversions": [],
+                "responsive_images": [],
+                "order_column": 2,
+                "created_at": "2025-09-27T11:12:27.000000Z",
+                "updated_at": "2025-09-27T11:12:27.000000Z",
+                "original_url": "https://tbzapp.test/storage/6922/476786972_488557444302252_7461807629992450726_n.jpg",
+                "preview_url": ""
+            },
+            {
+                "id": 6923,
+                "uuid": "05ea7578-e009-40e1-9f34-9abe6b7dcbc5",
+                "model_type": "App\Models\Product",
+                "model_id": 1156,
+                "collection_name": "color_images",
+                "name": "WhatsApp Image 2023-03-01 at 22.41.33",
+                "file_name": "WhatsApp-Image-2023-03-01-at-22.41.33.jpg",
+                "mime_type": "image/jpeg",
+                "disk": "public",
+                "conversions_disk": "public",
+                "size": 102249,
+                "manipulations": [],
+                "custom_properties": [],
+                "generated_conversions": [],
+                "responsive_images": [],
+                "order_column": 3,
+                "created_at": "2025-09-27T11:12:27.000000Z",
+                "updated_at": "2025-09-27T11:12:27.000000Z",
+                "original_url": "https://tbzapp.test/storage/6923/WhatsApp-Image-2023-03-01-at-22.41.33.jpg",
+                "preview_url": ""
+            }
+        ]
+    }
+}

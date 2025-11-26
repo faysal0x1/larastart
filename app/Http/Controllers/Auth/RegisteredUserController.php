@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Modules\Cart\Http\Middleware\CartSessionMiddleware;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,16 +32,16 @@ class RegisteredUserController extends Controller
     {
 
         $request->validate([
-            'name' => 'required|string|max:255',
-			'username'=>'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'name'     => 'required|string|max:255',
+            'username' => 'required|string|max:255',
+            'email'    => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-			'username'=>$request->username,
-            'email' => $request->email,
+            'name'     => $request->name,
+            'username' => $request->username,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
@@ -49,6 +49,9 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return to_route('dashboard');
+        // Mark user as just registered for cart conversion
+        CartSessionMiddleware::markUserJustLoggedIn();
+
+        return to_route('home');
     }
 }

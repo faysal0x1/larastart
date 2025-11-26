@@ -1,0 +1,16 @@
+{
+    "Cache": true,
+    "Cart": true,
+    "Coupon": true,
+    "PaymentGateway": true,
+    "Recommendation": true,
+    "SiteSeo": true,
+    "SiteSetting": true,
+    "StaticPage": true,
+    "MarketingService": true,
+    "Blog": true,
+    "AccessControl": true,
+    "User": true,
+    "Location": true,
+    "ServiceWorker": true
+}

@@ -19,7 +19,7 @@ export default function Users() {
         createSerialColumn('Serial'),
         column('name', 'Name', (item) => (
             <div className="font-medium">
-                <Link href={route('posts.show', item.id)} className="hover:underline">
+                <Link href={route('users.show', item.id)} className="hover:underline">
                     {item.name}
                 </Link>
             </div>
@@ -34,16 +34,27 @@ export default function Users() {
         column('actions', 'Actions', (item) => (
             <ActionsDropdown
                 item={item}
-                routes={{
-                    view: (id) => route('users.show', id),
-                    edit: (id) => route('users.edit', id),
-                    delete: (id) => route('users.destroy', id),
-                }}
-                permissions={{
-                    view: 'view users',
-                    edit: 'edit_users',
-                    delete: 'delete users',
-                }}
+                actions={[
+                    {
+                        type: 'view',
+                        label: 'View',
+                        route: (id) => route('users.show', id),
+                        // permission: 'quiz.view'
+                    },
+                    {
+                        type: 'edit',
+                        label: 'Edit',
+                        route: (id) => route('users.edit', id),
+                        // permission: 'quiz.edit'
+                    },
+                    {
+                        type: 'delete',
+                        label: 'Delete',
+                        route: (id) => route('users.destroy', id),
+                        method: 'delete',
+                        // permission: 'quiz.delete'
+                    },
+                ]}
             />
         )),
     ];
@@ -58,7 +69,8 @@ export default function Users() {
             breadcrumbs={breadcrumbs}
             columns={columns}
             createButtonText="New Users"
-            createPermission="create_users"
+        // createPermission="create_users"
         />
     );
 }
+

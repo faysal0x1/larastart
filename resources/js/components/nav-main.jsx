@@ -1,8 +1,8 @@
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import Can from '@/Components/Permissions/Can';
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar.jsx';
 import { Link, usePage } from '@inertiajs/react';
-import Can from '@/Components/Permissions/Can';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export function NavMain({ items = [] }) {
     const page = usePage();

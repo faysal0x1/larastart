@@ -16,15 +16,10 @@ class Tag extends Model
 		'status'
 	];
 
-	/**
-	 * Get all blogs that have this tag
-	 */
-	public function blogs(): BelongsToMany {
-		return $this->belongsToMany(Blog::class, 'blog_tag');
-	}
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_tag');
+    }
 
 
-	public function post(): BelongsToMany {
-		return $this->belongsToMany(Post::class);
-	}
 }

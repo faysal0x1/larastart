@@ -151,9 +151,9 @@ export default function create() {
         label: permission.name,
         value: permission.name
     }));
-    
+
     const fields = ${JSON.stringify(formFields, null, 8)};
-    
+
     const breadcrumbs = [
         {
             title: 'Create ${modelNameCapitalized}',
@@ -223,9 +223,9 @@ export default function edit() {
         label: permission.name,
         value: permission.name
     }));
-    
+
     const fields = ${JSON.stringify(formFields, null, 8)};
-    
+
     const breadcrumbs = [
         {
             title: 'Edit ${modelNameCapitalized}',

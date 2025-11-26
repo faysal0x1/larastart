@@ -1,33 +1,44 @@
 import { useAppearance } from '@/hooks/use-appearance';
 import { cn } from '@/lib/utils';
-import { Monitor, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function AppearanceToggleTab({ className = '', ...props }) {
     const { appearance, updateAppearance } = useAppearance();
 
-    const tabs = [
+    const themes = [
         { value: 'light', icon: Sun, label: 'Light' },
         { value: 'dark', icon: Moon, label: 'Dark' },
-        { value: 'system', icon: Monitor, label: 'System' },
     ];
 
+    const currentValue = themes.some((theme) => theme.value === appearance) ? appearance : 'light';
+
     return (
-        <div className={cn('inline-flex gap-1 rounded-lg bg-neutral-100 p-1 dark:bg-neutral-800', className)} {...props}>
-            {tabs.map(({ value, icon: Icon, label }) => (
-                <button
-                    key={value}
-                    onClick={() => updateAppearance(value)}
-                    className={cn(
-                        'flex items-center rounded-md px-3.5 py-1.5 transition-colors',
-                        appearance === value
-                            ? 'bg-white shadow-xs dark:bg-neutral-700 dark:text-neutral-100'
-                            : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-700/60',
-                    )}
-                >
-                    <Icon className="-ml-1 h-4 w-4" />
-                    <span className="ml-1.5 text-sm">{label}</span>
-                </button>
-            ))}
-        </div>
+        <Select value={currentValue} onValueChange={updateAppearance} {...props}>
+            <SelectTrigger className={cn('w-[140px] justify-between', className)}>
+                <SelectValue aria-label={`${currentValue} theme`}>
+                    <div className="flex items-center gap-2 text-sm">
+                        {themes
+                            .filter((theme) => theme.value === currentValue)
+                            .map(({ value, icon: Icon, label }) => (
+                                <span key={value} className="flex items-center gap-2">
+                                    <Icon className="h-4 w-4" />
+                                    {label}
+                                </span>
+                            ))}
+                    </div>
+                </SelectValue>
+            </SelectTrigger>
+            <SelectContent align="end">
+                {themes.map(({ value, icon: Icon, label }) => (
+                    <SelectItem key={value} value={value}>
+                        <div className="flex items-center gap-2">
+                            <Icon className="h-4 w-4" />
+                            {label}
+                        </div>
+                    </SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
     );
 }

@@ -2,37 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
-	public function index()
-	{
-		$user = auth()->user();
+    public function index() {
+        $user = auth()->user();
 
 
-		if ($user->role === 'admin') {
-			return redirect()->route('admin.dashboard');
-		}
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
 
-		if ($user->role === 'employer') {
-			//			return Inertia::render('frontend/custom/clientDashboard/clientDashboard');
-			return redirect()->route('employer.dashboard');
-		}
-
-		if ($user->role === 'freelancer') {
-			return Inertia::render('frontend/employeeDashboard/employeeDashboardIndex');
-
-			//			return redirect()->route('freelancer.dashboard');
-		}
-
-		return Inertia::render('dashboard');
-	}
+        if ($user->role == 'user') {
+            return redirect()->route('client.dashboard');
+        }
 
 
-	public function adminDashboard(): Response
-	{
-		return Inertia::render('dashboard');
-	}
+        return back();
+
+//		return Inertia::render('dashboard');
+    }
+
+
+    public function adminDashboard(): Response {
+        return Inertia::render('dashboard');
+    }
+
+
+    // User Dashboard page
+    public function userDashboard(): Response {
+        $user = Auth::user();
+        return Inertia::render('frontend/userDashboard/ProfilePageIndex', [
+            'user' => $user,
+        ]);
+    }
 }

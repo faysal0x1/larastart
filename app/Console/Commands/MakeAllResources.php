@@ -972,7 +972,7 @@ export default function edit() {
                         description="Update {$lowercaseName} information"
                         initialData={{$lowercaseName}}
                         fields={fields}
-                        submitUrl={\`{$resourceName}/\${{$lowercaseName}.id}\`}
+                        submitUrl={`{$resourceName}/\${{$lowercaseName}.id}`}
                         submitLabel="Update {$modelNameCapitalized}"
                         successMessage="{$modelNameCapitalized} updated successfully!"
                         method="PUT"

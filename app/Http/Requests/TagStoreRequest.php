@@ -1,4 +1,5 @@
 <?php
+
 // app/Http/Requests/TagStoreRequest.php
 
 namespace App\Http\Requests;
@@ -23,7 +24,9 @@ class TagStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string'
+            'name' => 'required|string',
+            'slug' => 'required|string',
+            'status' => 'required|string|in:active,inactive',
         ];
     }
 }

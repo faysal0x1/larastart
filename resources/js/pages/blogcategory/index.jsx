@@ -19,14 +19,31 @@ export default function BlogCategory() {
         column('name', 'Enter Name', (item) => <div className="font-medium">{item.name}</div>),
         column('description', 'Enter Description', (item) => <div className="font-medium">{item.description}</div>),
         column('order', 'Enter Blog Category Order', (item) => <div className="font-medium">{item.order}</div>),
+
         column('actions', 'Actions', (item) => (
             <ActionsDropdown
                 item={item}
-                routes={{
-                    view: (id) => route('blog-category.show', id),
-                    edit: (id) => route('blog-category.edit', id),
-                    delete: (id) => route('blog-category.destroy', id),
-                }}
+                actions={[
+                    {
+                        type: 'view',
+                        label: 'View',
+                        route: (id) => route('blog-category.show', id),
+                        // permission: 'quiz.view'
+                    },
+                    {
+                        type: 'edit',
+                        label: 'Edit',
+                        route: (id) => route('blog-category.edit', id),
+                        // permission: 'quiz.edit'
+                    },
+                    {
+                        type: 'delete',
+                        label: 'Delete',
+                        route: (id) => route('blog-category.destroy', id),
+                        method: 'delete',
+                        // permission: 'quiz.delete'
+                    },
+                ]}
             />
         )),
     ];

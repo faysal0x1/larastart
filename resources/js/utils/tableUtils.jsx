@@ -6,6 +6,7 @@ import { ToggleSwitch } from '@/components/ui/toggle-switch';
 import { Link, router, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import Swal from 'sweetalert2';
 
 /**
  * Create a sortable column configuration with standardized behavior
@@ -201,13 +202,37 @@ const capitalize = (str) => {
 
 /**
  * Create a serial number column
+ * @param {string} header - Column header text (default: '#')
+ * @param {Object} options - Optional pagination parameters (for backward compatibility)
+ * @param {number} options.currentPage - Current page number (1-based) - will be auto-detected if not provided
+ * @param {number} options.perPage - Number of items per page - will be auto-detected if not provided
  * @returns {Object} Column configuration object
  */
-export function createSerialColumn(header = '#') {
+export function createSerialColumn(header = '#', options = {}) {
+    const { currentPage, perPage } = options;
+
     return {
         id: 'serial',
         header: header,
-        cell: ({ row }) => <span className="dark:text-gray-200">{row.index + 1}</span>,
+        cell: ({ row, table }) => {
+            // Try to extract pagination from table context first (preferred method)
+            const paginationState = table?.getState?.()?.pagination;
+            let pageIndex = paginationState?.pageIndex ?? 0;
+            let pageSize = paginationState?.pageSize ?? 10;
+
+            // Override with provided options if they exist (for backward compatibility)
+            if (currentPage !== undefined) {
+                pageIndex = currentPage - 1; // Convert 1-based to 0-based
+            }
+            if (perPage !== undefined) {
+                pageSize = perPage;
+            }
+
+            // Calculate serial number: (pageIndex) * pageSize + row.index + 1
+            // pageIndex is 0-based, so we add 1 to convert to 1-based for display
+            const serialNumber = pageIndex * pageSize + row.index + 1;
+            return <span className="dark:text-gray-200">{serialNumber}</span>;
+        },
         enableSorting: false,
     };
 }
@@ -394,4 +419,277 @@ export function createPermissionActionsColumn(actions = [], header = 'Actions') 
         },
         enableSorting: false,
     };
+}
+/**
+ * Create an image column with thumbnail display
+ *
+ * @param {string} key - The accessorKey for the column
+ * @param {string} header - The column header text
+ * @param {Object} options - Configuration options
+ * @returns {Object} Column configuration object
+ */
+export function createImageColumn(key, header, options = {}) {
+    const {
+        width = 50,
+        height = 50,
+        className = '',
+        defaultImage = '', // URL or path to default/fallback image
+        altTextFn = (item) => item.name || item.title || 'Image', // Function to generate alt text
+        imageUrlFn = null, // Optional function to transform the image URL
+    } = options;
+
+    return createColumn(
+        key,
+        header,
+        (row) => {
+            const item = row.original;
+            let imageUrl = item[key];
+
+            // Apply transformation function if provided
+            if (imageUrlFn && typeof imageUrlFn === 'function') {
+                imageUrl = imageUrlFn(item);
+            }
+
+            // Use default image if no image URL is provided
+            if (!imageUrl && defaultImage) {
+                imageUrl = defaultImage;
+            }
+
+            // Don't render anything if no image is available
+            if (!imageUrl) {
+                return <span className="text-gray-400 dark:text-gray-500">-</span>;
+            }
+
+            return (
+                <div className="flex items-center">
+                    <img
+                        src={imageUrl}
+                        alt={altTextFn(item)}
+                        width={width}
+                        height={height}
+                        className={`object-cover rounded ${className}`}
+                        onError={(e) => {
+                            if (defaultImage) {
+                                e.target.src = defaultImage;
+                            } else {
+                                e.target.style.display = 'none';
+                            }
+                        }}
+                    />
+                </div>
+            );
+        },
+        false,
+        {
+            meta: {
+                className: 'w-[60px]', // Default width for the column
+            },
+        }
+    );
+}
+
+export function createSelectColumn(key, header, routeName, options = {}) {
+    const {
+        confirmMessage = `Are you sure you want to change this ${key.replace('_', ' ')}?`,
+        successMessage = `${key.replace('_', ' ')} updated successfully`,
+        errorMessage = `Failed to update ${key.replace('_', ' ')}`,
+        idAccessor = 'id',
+        modelType = '',
+        disabledFn = null,
+        onUpdateSuccess = null,
+        preserveScroll = true,
+        preserveState = true,
+        customPayloadFn = null,
+        selectOptions = [], // Array of {value, label} objects
+        placeholder = 'Select...',
+        showConfirmation = true,
+    } = options;
+
+    return {
+        accessorKey: key,
+        header: header,
+        cell: ({ row }) => {
+            const currentValue = row.original[key];
+            const isDisabled = disabledFn ? disabledFn(row.original) : false;
+
+            const handleUpdate = async (newValue) => {
+                if (newValue === currentValue) return; // No change
+
+                try {
+                    const itemId = row.original[idAccessor];
+                    // Create the payload
+                    const payload = customPayloadFn ? customPayloadFn(newValue, row.original) : { [key]: newValue };
+
+                    // Use Inertia to update with both model and id parameters
+                    router.patch(route(routeName, { model: modelType, id: itemId }), payload, {
+                        preserveScroll,
+                        preserveState,
+                        onSuccess: (page) => {
+                            // Show success message with SweetAlert
+                            Swal.fire({
+                                title: 'Success!',
+                                text: successMessage,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+
+                            // Call success callback if provided
+                            if (onUpdateSuccess) {
+                                onUpdateSuccess(page.props, row.original);
+                            }
+                        },
+                        onError: (errors) => {
+                            console.error('Select update failed:', errors);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorMessage,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        },
+                    });
+                } catch (error) {
+                    console.error('Select update failed:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: errorMessage,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            };
+
+            const handleSelectChange = async (newValue) => {
+                if (showConfirmation) {
+                    // Show SweetAlert confirmation dialog
+                    const result = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: confirmMessage,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, update it!',
+                        cancelButtonText: 'Cancel'
+                    });
+
+                    if (result.isConfirmed) {
+                        await handleUpdate(newValue);
+                    }
+                } else {
+                    await handleUpdate(newValue);
+                }
+            };
+
+            return (
+                <StatusSelect
+                    value={currentValue}
+                    onChange={handleSelectChange}
+                    disabled={isDisabled}
+                    options={selectOptions}
+                    placeholder={placeholder}
+                />
+            );
+        },
+        enableSorting: true,
+        meta: {
+            className: 'w-36',
+        },
+    };
+}
+
+/**
+ * Create a checkbox column for row selection
+ *
+ * @param {Object} options - Configuration options
+ * @returns {Object} Column configuration object
+ */
+export function createCheckboxColumn(options = {}) {
+    const {
+        header = '',
+        idAccessor = 'id',
+        onRowToggle = null,
+        onSelectAll = null,
+        selectedRows = [],
+        disabledFn = null,
+    } = options;
+
+    return {
+        id: 'select',
+        header: ({ table }) => {
+            const allRows = table.getRowModel().rows.map(row => row.original);
+            const allSelected = allRows.length > 0 && allRows.every(row =>
+                selectedRows.some(selectedRow => selectedRow[idAccessor] === row[idAccessor])
+            );
+            const someSelected = selectedRows.length > 0;
+
+            return (
+                <div className="flex items-center">
+                    <input
+                        type="checkbox"
+                        checked={allSelected}
+                        ref={(el) => {
+                            if (el) el.indeterminate = someSelected && !allSelected;
+                        }}
+                        onChange={(e) => {
+                            if (onSelectAll) {
+                                onSelectAll(allRows, e.target.checked);
+                            }
+                        }}
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                </div>
+            );
+        },
+        cell: ({ row }) => {
+            const isDisabled = disabledFn ? disabledFn(row.original) : false;
+            const isSelected = selectedRows.some(selectedRow => selectedRow[idAccessor] === row.original[idAccessor]);
+
+            const handleSelectionChange = (checked) => {
+                if (onRowToggle) {
+                    onRowToggle(row.original, checked);
+                }
+            };
+
+            return (
+                <div className="flex items-center">
+                    <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={(e) => handleSelectionChange(e.target.checked)}
+                        disabled={isDisabled}
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
+                </div>
+            );
+        },
+        enableSorting: false,
+        enableHiding: false,
+        meta: {
+            className: 'w-12',
+        },
+    };
+}
+
+function StatusSelect({ value, onChange, disabled, options, placeholder }) {
+    return (
+        <select
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            disabled={disabled}
+            className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            {placeholder && (
+                <option value="" disabled>
+                    {placeholder}
+                </option>
+            )}
+            {options.map((option) => (
+                <option key={option.value} value={option.value}>
+                    {option.label}
+                </option>
+            ))}
+        </select>
+    );
 }

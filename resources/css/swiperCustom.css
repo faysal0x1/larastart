@@ -1,0 +1,58 @@
+/* Custom styles for Swiper navigation buttons (.swiper-button-next, .swiper-button-prev).
+    These styles aim for a sleek, modern, and reduced-height look.
+*/
+
+/* Target both navigation buttons */
+.swiper-button-next,
+.swiper-button-prev {
+    /* Set a fixed, smaller size for reduced height */
+    width: 2.25rem !important; /* 36px */
+    height: 2.25rem !important; /* 36px */
+    
+    /* Center the arrow icon vertically */
+    margin-top: -1.125rem !important; 
+    
+    /* Base styling: circular shape, dark semi-transparent background */
+    background-color: rgba(17, 24, 39, 0.7); /* Dark gray, 70% opacity */
+    color: #0e0e0e; /* White arrow color */
+    border-radius: 9999px; /* Fully rounded/circular */
+    transition: all 0.2s ease-in-out;
+    opacity: 0.8; /* Slightly visible when inactive */
+    
+    /* Subtle shadow for depth */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effect for a designful touch */
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    background-color: #e4e7e6; /* Tailwind 'emerald-500' or similar highlight color */
+    opacity: 1; /* Fully opaque */
+    transform: scale(1.05); /* Slight zoom on hover */
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3), 0 4px 6px -4px rgba(16, 185, 129, 0.2);
+}
+
+/* Adjust the positioning for the previous button */
+.swiper-button-prev {
+    left: 10px !important; /* Move it closer to the edge */
+}
+
+/* Adjust the positioning for the next button */
+.swiper-button-next {
+    right: 10px !important; /* Move it closer to the edge */
+}
+
+/* Make the arrow icons inside the buttons larger and bolder.
+    Swiper uses pseudo-elements for the arrows, so we style those.
+*/
+.swiper-button-next::after,
+.swiper-button-prev::after {
+    font-size: 1rem !important; /* Adjust icon size */
+    font-weight: 900; /* Make the arrow bolder */
+}
+
+/* Hide buttons when swiper is at the start/end */
+.swiper-button-disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}

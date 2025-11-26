@@ -2,28 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-class BlogLike extends Model
+/**
+ * @deprecated Use App\Modules\Blog\Models\BlogLike instead
+ * This class is kept for backward compatibility only.
+ * 
+ * @see \App\Modules\Blog\Models\BlogLike
+ */
+class BlogLike extends \App\Modules\Blog\Models\BlogLike
 {
-
-	protected $fillable = [
-		'blog_id',
-		'user_id'
-	];
-
-	/**
-	 * Get the blog that was liked
-	 */
-	public function blog(): BelongsTo {
-		return $this->belongsTo(Blog::class);
-	}
-
-	/**
-	 * Get the user who liked the blog
-	 */
-	public function user(): BelongsTo {
-		return $this->belongsTo(User::class);
-	}
+    // This class is an alias for backward compatibility
+    // All functionality is provided by the module model
 }
+

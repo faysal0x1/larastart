@@ -1,4 +1,5 @@
 <?php
+
 // app/Http/Requests/TagUpdateRequest.php
 
 namespace App\Http\Requests;
@@ -23,7 +24,9 @@ class TagUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'sometimes|string'
+            'name' => 'sometimes|string',
+            'slug' => 'sometimes|string',
+            'status' => 'sometimes|string|in:active,inactive',
         ];
     }
 }

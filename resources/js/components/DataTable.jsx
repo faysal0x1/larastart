@@ -10,27 +10,30 @@ import { ChevronDown, Search, SlidersHorizontal } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function DataTable({
-                                      data,
-                                      columns,
-                                      totalItems,
-                                      searchPlaceholder = 'Search...',
-                                      initialPageSize = 10,
-                                      pageSizeOptions = [5, 10, 25, 50, 100],
-                                      onPageChange,
-                                      currentPage = 0,
-                                      onSearch,
-                                      searchValue = '',
-                                      onPageSizeChange,
-                                      onSortChange,
-                                      sortColumn = 'created_at',
-                                      sortDirection = 'desc',
-                                      onExport,
-                                      showColumnToggle = true,
-                                      title,
-                                      actions,
-                                      columnVisibility = {},
-                                      onColumnVisibilityChange,
-                                  }) {
+    data,
+    columns,
+    totalItems,
+    searchPlaceholder = 'Search...',
+    initialPageSize = 10,
+    pageSizeOptions = [5, 10, 25, 50, 100],
+    onPageChange,
+    currentPage = 0,
+    onSearch,
+    searchValue = '',
+    onPageSizeChange,
+    onSortChange,
+    sortColumn = 'created_at',
+    sortDirection = 'desc',
+    onExport,
+    showColumnToggle = true,
+    title,
+    actions,
+    dataTableExtraFeatures,
+    columnVisibility = {},
+    onColumnVisibilityChange,
+    customFilters = null,
+    tabs = null,
+}) {
     const [globalFilter, setGlobalFilter] = useState(searchValue);
     const [pageSize, setPageSize] = useState(initialPageSize);
     const [sorting, setSorting] = useState([{ id: sortColumn, desc: sortDirection === 'desc' }]);
@@ -57,7 +60,15 @@ export default function DataTable({
     const isServerSide = !!onPageChange;
 
     const handleSortingChange = (updatedSorting) => {
-        const newSorting = updatedSorting.length > 0 ? updatedSorting : [{ id: sortColumn, desc: sortDirection === 'desc' }];
+        const newSorting =
+            updatedSorting.length > 0
+                ? updatedSorting
+                : [
+                    {
+                        id: sortColumn,
+                        desc: sortDirection === 'desc',
+                    },
+                ];
         setSorting(newSorting);
 
         if (isServerSide && onSortChange) {
@@ -159,6 +170,7 @@ export default function DataTable({
                 </div>
 
                 <div className="flex items-center gap-2">
+                    {dataTableExtraFeatures}
                     {actions}
 
                     <ExportDropdown onExport={onExport} data={data} allData={null} />
@@ -201,26 +213,58 @@ export default function DataTable({
                 </div>
             </div>
 
-            {/* Page Size Selector */}
-            <div className="flex items-center justify-end gap-2">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Show</span>
-                <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
-                    <SelectTrigger className="w-[80px] border-gray-300 bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
-                        <SelectValue placeholder={pageSize} />
-                    </SelectTrigger>
-                    <SelectContent className="border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800">
-                        {pageSizeOptions.map((size) => (
-                            <SelectItem
-                                key={size}
-                                value={String(size)}
-                                className="text-gray-900 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
+            {/* Custom Filters */}
+            {customFilters}
+
+            {/* Page Size Selector and Tabs */}
+            <div className={`flex items-center ${tabs ? 'justify-between' : 'justify-end'}`}>
+                {/* Tabs on the left */}
+                {tabs && (
+                    <div className="flex space-x-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
+                        {tabs.tabs.map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => tabs.onTabChange(tab.id)}
+                                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${tabs.activeTab === tab.id
+                                    ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-gray-100'
+                                    : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
+                                    }`}
                             >
-                                {size}
-                            </SelectItem>
+                                {tab.label}
+                                {tab.count !== undefined && (
+                                    <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-full ${tabs.activeTab === tab.id
+                                        ? 'bg-gray-100 text-gray-600 dark:bg-gray-600 dark:text-gray-300'
+                                        : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                                        }`}>
+                                        {tab.count}
+                                    </span>
+                                )}
+                            </button>
                         ))}
-                    </SelectContent>
-                </Select>
-                <span className="text-sm text-gray-500 dark:text-gray-400">per page</span>
+                    </div>
+                )}
+
+                {/* Page size selector on the right */}
+                <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Show</span>
+                    <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                        <SelectTrigger className="w-[80px] border-gray-300 bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
+                            <SelectValue placeholder={pageSize} />
+                        </SelectTrigger>
+                        <SelectContent className="border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800">
+                            {pageSizeOptions.map((size) => (
+                                <SelectItem
+                                    key={size}
+                                    value={String(size)}
+                                    className="text-gray-900 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
+                                >
+                                    {size}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">per page</span>
+                </div>
             </div>
 
             {/* Main Table */}
@@ -245,7 +289,12 @@ export default function DataTable({
                                                                 header.column.toggleSorting(currentSort === 'asc');
                                                             } else {
                                                                 // Clear all other sorts and set this one
-                                                                table.setSorting([{ id: header.column.id, desc: currentSort === 'asc' }]);
+                                                                table.setSorting([
+                                                                    {
+                                                                        id: header.column.id,
+                                                                        desc: currentSort === 'asc',
+                                                                    },
+                                                                ]);
                                                             }
 
                                                             // If server-side sorting is enabled, call the parent handler
@@ -256,18 +305,14 @@ export default function DataTable({
                                                         }}
                                                         className="flex cursor-pointer items-center hover:text-gray-700 dark:hover:text-gray-300"
                                                     >
-                                                        {flexRender(
-                                                            header.column.columnDef.header,
-                                                            header.getContext()
-                                                        )}
+                                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                                         <ChevronDown
-                                                            className={`ml-1 h-4 w-4 transition-transform ${
-                                                                header.column.getIsSorted() === 'desc'
-                                                                    ? 'rotate-180'
-                                                                    : header.column.getIsSorted() === 'asc'
-                                                                        ? ''
-                                                                        : 'rotate-0 opacity-0'
-                                                            }`}
+                                                            className={`ml-1 h-4 w-4 transition-transform ${header.column.getIsSorted() === 'desc'
+                                                                ? 'rotate-180'
+                                                                : header.column.getIsSorted() === 'asc'
+                                                                    ? ''
+                                                                    : 'rotate-0 opacity-0'
+                                                                }`}
                                                         />
                                                     </div>
                                                 ) : (

@@ -1,34 +1,32 @@
 <?php
 
+// app/Http/Requests/CountryStoreRequest.php
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 class CountryStoreRequest extends FormRequest
 {
-	/**
-	 * Determine if the user is authorized to make this request.
-	 */
-	public function authorize(): bool {
-		return true;
-	}
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
 
-	/**
-	 * Get the validation rules that apply to the request.
-	 *
-	 * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-	 */
-	public function rules(): array {
-		return [
-			'name' => 'required|string|max:255|unique:countries',
-			'code' => 'required|string|max:255|unique:countries',
-		];
-	}
-
-	public function messages() {
-		return [
-			'name.required' => 'Name is required',
-			'code.required' => 'Code is required',
-		];
-	}
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'code' => 'required|string',
+            'name' => 'required|string',
+            'status' => 'required|string|in:active,inactive',
+        ];
+    }
 }

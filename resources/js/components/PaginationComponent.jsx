@@ -28,7 +28,7 @@ export const PaginationComponent = ({ pageIndex, totalCount, startIndex, endInde
                 preserveScroll: true,
                 replace: true,
                 onBefore: () => true,
-                onSuccess: () => {},
+                onSuccess: () => { },
             },
         );
     };

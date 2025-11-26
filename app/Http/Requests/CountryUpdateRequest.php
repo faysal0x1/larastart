@@ -1,5 +1,7 @@
 <?php
 
+// app/Http/Requests/CountryUpdateRequest.php
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -11,7 +13,7 @@ class CountryUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +24,9 @@ class CountryUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'code' => 'sometimes|string',
+            'name' => 'sometimes|string',
+            'status' => 'sometimes|string|in:active,inactive',
         ];
     }
 }

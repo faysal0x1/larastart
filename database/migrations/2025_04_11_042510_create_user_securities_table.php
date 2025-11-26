@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('user_securities', function (Blueprint $table) {
             $table->id();
-			$table->foreignId('freelancer_id')->constrained()->onDelete('cascade');
+			// $table->foreignId('freelancer_id')->constrained()->onDelete('cascade');
 			$table->boolean('two_factor_enabled')->default(false);
 			$table->string('two_factor_method')->nullable();
 			$table->boolean('login_notifications')->default(true);

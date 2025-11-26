@@ -17,14 +17,31 @@ export default function Blog() {
     const columns = [
         createSerialColumn('Serial'),
         column('title', 'Title', (item) => <div className="font-medium">{item.title}</div>),
+
         column('actions', 'Actions', (item) => (
             <ActionsDropdown
                 item={item}
-                routes={{
-                    view: (id) => route('blogs.show', id),
-                    edit: (id) => route('blogs.edit', id),
-                    delete: (id) => route('blogs.destroy', id),
-                }}
+                actions={[
+                    {
+                        type: 'view',
+                        label: 'View',
+                        route: (id) => route('blogs.show', id),
+                        // permission: 'quiz.view'
+                    },
+                    {
+                        type: 'edit',
+                        label: 'Edit',
+                        route: (id) => route('blogs.edit', id),
+                        // permission: 'quiz.edit'
+                    },
+                    {
+                        type: 'delete',
+                        label: 'Delete',
+                        route: (id) => route('blogs.destroy', id),
+                        method: 'delete',
+                        // permission: 'quiz.delete'
+                    },
+                ]}
             />
         )),
     ];

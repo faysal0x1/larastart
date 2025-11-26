@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use App\Services\ImageDownloadService;
+use Illuminate\Support\ServiceProvider;
 
 class ImageDownloaderServiceProvider extends ServiceProvider
 {

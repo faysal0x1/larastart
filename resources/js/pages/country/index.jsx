@@ -31,11 +31,27 @@ export default function Country() {
         column('actions', 'Actions', (item) => (
             <ActionsDropdown
                 item={item}
-                routes={{
-                    view: (id) => route('country.show', id),
-                    edit: (id) => route('country.edit', id),
-                    delete: (id) => route('country.destroy', id),
-                }}
+                actions={[
+                    {
+                        type: 'view',
+                        label: 'View',
+                        route: (id) => route('country.show', id),
+                        // permission: 'quiz.view'
+                    },
+                    {
+                        type: 'edit',
+                        label: 'Edit',
+                        route: (id) => route('country.edit', id),
+                        // permission: 'quiz.edit'
+                    },
+                    {
+                        type: 'delete',
+                        label: 'Delete',
+                        route: (id) => route('country.destroy', id),
+                        method: 'delete',
+                        // permission: 'quiz.delete'
+                    },
+                ]}
             />
         )),
     ];

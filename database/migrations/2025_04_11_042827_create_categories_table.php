@@ -13,13 +13,38 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-			$table->string('name');
-			$table->text('description')->nullable();
-			$table->string('icon')->nullable();
-			$table->boolean('is_active')->default(true);
-			$table->integer('display_order')->default(0);
-			$table->foreignId('parent_id')->nullable()->references('id')->on('categories')->onDelete('set null');
-			$table->timestamps();
+            $table->string('name');
+            $table->string('slug');
+            $table->integer('priority')->nullable();
+            $table->text('description')->nullable();
+            $table->integer('level')->default(0);
+            $table->string('path')->nullable();
+
+            //            $table->string('parent_id')->nullable();
+            $table->unsignedBigInteger('parent_id')->nullable();
+
+            $table->foreign('parent_id')->references('id')
+                ->on('categories')
+                ->onDelete('cascade');
+            $table->string('position')->nullable();
+            $table->string('is_menu_active')->nullable();
+            $table->string('menu_position')->nullable();
+            $table->string('image')->nullable();
+            $table->string('banner')->nullable();
+            $table->string('bottom_description')->nullable();
+            $table->string('meta_title')->nullable();
+            $table->string('meta_image')->nullable();
+            $table->string('meta_description')->nullable();
+            $table->string('is_featured')->nullable();
+            $table->string('is_active')->nullable();
+
+
+            $table->boolean('status')->nullable();
+
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index(['parent_id', 'level']);
+            $table->index('path');
         });
     }
 

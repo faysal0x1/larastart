@@ -1,4 +1,5 @@
 import QuillEditor from '@/components/QuillEditor.jsx';
+import RichTextEditor from '@/components/ui/RichTextEditor';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -19,12 +20,17 @@ import { CalendarIcon, Check, ChevronsUpDown, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 import { IconPicker } from '../../../components/ui/icon-picker.jsx';
+import SingleColumnFormLayout from '@/components/form-layouts/SingleColumnFormLayout.jsx';
+import TwoColumnFormLayout from '@/components/form-layouts/TwoColumnFormLayout.jsx';
+import SectionedFormLayout from '@/components/form-layouts/SectionedFormLayout.jsx';
 
 export default function GlobalForm({
     title = 'Form',
     description = '',
     initialData = {},
     fields = [],
+    sections = [],
+    layoutType = 'single', // 'single' | 'two-column' | 'sectioned'
     submitUrl,
     method = 'post',
     submitLabel = 'Submit',
@@ -35,11 +41,22 @@ export default function GlobalForm({
 }) {
     const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm(initialData);
 
+    const handleFieldChange = (field, value) => {
+        const nextData = { ...data, [field.name]: value };
+        setData(field.name, value);
+
+        if (typeof field.onChange === 'function') {
+            field.onChange({
+                value,
+                field,
+                data: nextData,
+                setData,
+            });
+        }
+    };
+
     // State for image previews
     const [imagePreviews, setImagePreviews] = useState({});
-
-    // State to track if form was submitted
-    const [isSubmitted, setIsSubmitted] = useState(false);
 
     // State for combobox/searchable select open status
     const [openCombobox, setOpenCombobox] = useState({});
@@ -49,9 +66,13 @@ export default function GlobalForm({
     const handleSubmit = (e) => {
         e.preventDefault();
         clearErrors();
-        setIsSubmitted(true);
 
         const formData = new FormData();
+
+        // Add _method field for PUT/PATCH requests (Laravel requirement)
+        if (isEditing) {
+            formData.append('_method', 'PUT');
+        }
 
         // Append all form values to FormData
         Object.keys(data).forEach((key) => {
@@ -67,8 +88,21 @@ export default function GlobalForm({
             }
         });
 
+        // Debug: Log form data being sent
+        console.log('Form data being sent:', data);
+        console.log('Is editing:', isEditing);
+        console.log('Submit URL:', submitUrl);
+        console.log('Method:', method);
+
+        // Debug: Log FormData contents
+        console.log('FormData contents:');
+        for (let [key, value] of formData.entries()) {
+            console.log(key, value);
+        }
+
         const options = {
-            onSuccess: () => {
+            onSuccess: (page) => {
+                console.log('Form submission successful:', page);
                 // Show success toast with Sonner
                 toast.success(successMessage, {
                     description: successMessage,
@@ -107,7 +141,8 @@ export default function GlobalForm({
         };
 
         if (isEditing) {
-            put(submitUrl, formData, options);
+            // Use POST with _method=PUT for Laravel compatibility
+            post(submitUrl, formData, options);
         } else {
             post(submitUrl, formData, options);
         }
@@ -122,17 +157,17 @@ export default function GlobalForm({
     };
 
     // Handle image file selection
-    const handleImageChange = (e, name) => {
+    const handleImageChange = (e, field) => {
         const file = e.target.files[0];
         if (file) {
-            setData(name, file);
+            handleFieldChange(field, file);
 
             // Create image preview
             const reader = new FileReader();
             reader.onload = (e) => {
                 setImagePreviews((prev) => ({
                     ...prev,
-                    [name]: e.target.result,
+                    [field.name]: e.target.result,
                 }));
             };
             reader.readAsDataURL(file);
@@ -140,39 +175,39 @@ export default function GlobalForm({
     };
 
     // Clear image and preview
-    const clearImage = (name) => {
-        setData(name, null);
+    const clearImage = (field) => {
+        handleFieldChange(field, null);
         setImagePreviews((prev) => {
             const newPreviews = { ...prev };
-            delete newPreviews[name];
+            delete newPreviews[field.name];
             return newPreviews;
         });
 
         // Reset the file input
-        const fileInput = document.getElementById(name);
+        const fileInput = document.getElementById(field.name);
         if (fileInput) fileInput.value = '';
     };
 
     // Handle multiselect item selection
-    const handleMultiselectToggle = (name, value) => {
-        const currentValues = Array.isArray(data[name]) ? [...data[name]] : [];
+    const handleMultiselectToggle = (field, value) => {
+        const currentValues = Array.isArray(data[field.name]) ? [...data[field.name]] : [];
 
         if (currentValues.includes(value)) {
-            setData(
-                name,
+            handleFieldChange(
+                field,
                 currentValues.filter((item) => item !== value),
             );
         } else {
-            setData(name, [...currentValues, value]);
+            handleFieldChange(field, [...currentValues, value]);
         }
     };
 
     // Remove item from multiselect
-    const removeMultiselectItem = (name, value) => {
-        if (Array.isArray(data[name])) {
-            setData(
-                name,
-                data[name].filter((item) => item !== value),
+    const removeMultiselectItem = (field, value) => {
+        if (Array.isArray(data[field.name])) {
+            handleFieldChange(
+                field,
+                data[field.name].filter((item) => item !== value),
             );
         }
     };
@@ -189,7 +224,36 @@ export default function GlobalForm({
         });
     }, [initialData, fields]);
 
+    // Normalize multiselect values to strings to ensure consistent toggling and checked states
+    useEffect(() => {
+        let didChange = false;
+        const normalized = {};
+
+        fields.forEach((field) => {
+            if (field.type === 'multiselect') {
+                const current = data[field.name];
+                if (Array.isArray(current)) {
+                    const normalizedValues = current.map((v) => (v != null ? v.toString() : v)).filter((v) => v != null);
+                    // Compare shallowly
+                    if (JSON.stringify(normalizedValues) !== JSON.stringify(current)) {
+                        normalized[field.name] = normalizedValues;
+                        didChange = true;
+                    }
+                }
+            }
+        });
+
+        if (didChange) {
+            Object.entries(normalized).forEach(([key, value]) => setData(key, value));
+        }
+    }, [fields, data, setData]);
+
     const renderField = (field) => {
+        // Add safety check for undefined field
+        if (!field || !field.name) {
+            return null;
+        }
+
         const {
             name,
             label,
@@ -204,17 +268,19 @@ export default function GlobalForm({
             helpText,
             className = '',
             disabled = false,
+            readOnly = false,
             accept,
             searchable = false,
         } = field;
 
-        const hasError = !!errors[name];
+        const hasError = !!errors?.[name];
         const errorClass = hasError ? 'border-red-500 focus:ring-red-500' : '';
         const containerClass = hasError ? 'error-field' : '';
 
         const commonProps = {
             id: name,
             disabled,
+            readOnly,
             className: `${className} ${errorClass}`,
         };
 
@@ -230,7 +296,7 @@ export default function GlobalForm({
                         {...commonProps}
                         type={type}
                         value={data[name] || ''}
-                        onChange={(e) => setData(name, e.target.value)}
+                        onChange={(e) => handleFieldChange(field, e.target.value)}
                         placeholder={placeholder}
                         min={min}
                         max={max}
@@ -244,7 +310,7 @@ export default function GlobalForm({
                     <Textarea
                         {...commonProps}
                         value={data[name] || ''}
-                        onChange={(e) => setData(name, e.target.value)}
+                        onChange={(e) => handleFieldChange(field, e.target.value)}
                         placeholder={placeholder}
                         rows={rows}
                         required={required}
@@ -253,11 +319,12 @@ export default function GlobalForm({
             case 'richtext':
                 return (
                     <div className={cn('mb-4', errorClass)}>
-                        <QuillEditor
+                        <RichTextEditor
+                            id={name}
                             value={data[name] || ''}
-                            onChange={(content) => setData(name, content)}
+                            onChange={(content) => handleFieldChange(field, content)}
                             placeholder={placeholder}
-                            disabled={disabled}
+                            height={300}
                             className={className}
                         />
                     </div>
@@ -283,13 +350,13 @@ export default function GlobalForm({
                                 <Command>
                                     <CommandInput placeholder={`Search ${label}...`} />
                                     <CommandEmpty>No option found.</CommandEmpty>
-                                    <CommandGroup>
+                                    <CommandGroup className="max-h-64 overflow-y-auto">
                                         {options.map((option) => (
                                             <CommandItem
                                                 key={option.value}
-                                                value={option.value.toString()}
-                                                onSelect={(currentValue) => {
-                                                    setData(name, currentValue);
+                                                value={option.label}
+                                                onSelect={() => {
+                                                    handleFieldChange(field, option.value);
                                                     setOpenCombobox({ ...openCombobox, [name]: false });
                                                 }}
                                             >
@@ -307,13 +374,14 @@ export default function GlobalForm({
                             </PopoverContent>
                         </Popover>
                     );
-                } else {
+                }
+                else {
                     return (
-                        <Select value={data[name]?.toString() || ''} onValueChange={(value) => setData(name, value)} required={required}>
+                        <Select value={data[name]?.toString() || ''} onValueChange={(value) => handleFieldChange(field, value)} required={required}>
                             <SelectTrigger {...commonProps}>
                                 <SelectValue placeholder={placeholder} />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="max-h-64">
                                 {options.map((option) => (
                                     <SelectItem key={option.value} value={option.value.toString()}>
                                         {option.label}
@@ -350,13 +418,13 @@ export default function GlobalForm({
                                             <CommandItem
                                                 key={option.value}
                                                 value={option.value.toString()}
-                                                onSelect={() => handleMultiselectToggle(name, option.value.toString())}
+                                                onSelect={() => handleMultiselectToggle(field, option.value.toString())}
                                             >
                                                 <div className="flex items-center">
                                                     <Checkbox
                                                         checked={Array.isArray(data[name]) && data[name].includes(option.value.toString())}
                                                         className="mr-2 h-4 w-4"
-                                                        onCheckedChange={() => handleMultiselectToggle(name, option.value.toString())}
+                                                        onCheckedChange={() => handleMultiselectToggle(field, option.value.toString())}
                                                     />
                                                     {option.label}
                                                 </div>
@@ -375,7 +443,7 @@ export default function GlobalForm({
                                     return (
                                         <Badge key={value} variant="secondary" className="flex items-center gap-1">
                                             {option?.label || value}
-                                            <X className="h-3 w-3 cursor-pointer" onClick={() => removeMultiselectItem(name, value)} />
+                                            <X className="h-3 w-3 cursor-pointer" onClick={() => removeMultiselectItem(field, value)} />
                                         </Badge>
                                     );
                                 })}
@@ -387,7 +455,7 @@ export default function GlobalForm({
             case 'switch':
                 return (
                     <div className="flex items-center space-x-2">
-                        <Switch {...commonProps} checked={!!data[name]} onCheckedChange={(checked) => setData(name, checked)} required={required} />
+                        <Switch {...commonProps} checked={!!data[name]} onCheckedChange={(checked) => handleFieldChange(field, checked)} required={required} />
                     </div>
                 );
 
@@ -397,7 +465,7 @@ export default function GlobalForm({
                         <IconPicker
                             {...commonProps}
                             value={data[name]?.toString() || ''}
-                            onValueChange={(value) => setData(name, value)}
+                            onValueChange={(value) => handleFieldChange(field, value)}
                             required={required}
                         />
                     </div>
@@ -406,7 +474,7 @@ export default function GlobalForm({
             case 'checkbox':
                 return (
                     <div className="flex items-center space-x-2">
-                        <Checkbox {...commonProps} checked={!!data[name]} onCheckedChange={(checked) => setData(name, checked)} required={required} />
+                        <Checkbox {...commonProps} checked={!!data[name]} onCheckedChange={(checked) => handleFieldChange(field, checked)} required={required} />
                     </div>
                 );
 
@@ -415,7 +483,7 @@ export default function GlobalForm({
                     <RadioGroup
                         {...commonProps}
                         value={data[name]?.toString() || ''}
-                        onValueChange={(value) => setData(name, value)}
+                        onValueChange={(value) => handleFieldChange(field, value)}
                         required={required}
                     >
                         <div className="space-y-2">
@@ -445,7 +513,7 @@ export default function GlobalForm({
                             <Calendar
                                 mode="single"
                                 selected={data[name] ? new Date(data[name]) : undefined}
-                                onSelect={(date) => setData(name, date ? format(date, 'yyyy-MM-dd') : null)}
+                                onSelect={(date) => handleFieldChange(field, date ? format(date, 'yyyy-MM-dd') : null)}
                                 disabled={disabled}
                                 required={required}
                             />
@@ -461,11 +529,11 @@ export default function GlobalForm({
                                 {...commonProps}
                                 type="file"
                                 accept={accept || 'image/*'}
-                                onChange={(e) => handleImageChange(e, name)}
+                                onChange={(e) => handleImageChange(e, field)}
                                 required={required && !data[name]}
                             />
                             {imagePreviews[name] && (
-                                <Button type="button" variant="outline" size="icon" onClick={() => clearImage(name)}>
+                                <Button type="button" variant="outline" size="icon" onClick={() => clearImage(field)}>
                                     <X className="h-4 w-4" />
                                 </Button>
                             )}
@@ -488,13 +556,37 @@ export default function GlobalForm({
                         {...commonProps}
                         type="text"
                         value={data[name] || ''}
-                        onChange={(e) => setData(name, e.target.value)}
+                        onChange={(e) => handleFieldChange(field, e.target.value)}
                         placeholder={placeholder}
                         required={required}
                     />
                 );
         }
     };
+
+    const renderFieldBlock = (field) => (
+        <div className={`space-y-2 ${errors[field.name] ? 'error-field' : ''}`}>
+            {field.type !== 'checkbox' && field.type !== 'switch' && (
+                <Label htmlFor={field.name} className={errors[field.name] ? 'text-red-500' : ''}>
+                    {field.label}
+                    {field.required && <span className="ml-1 text-red-500">*</span>}
+                </Label>
+            )}
+
+            {renderField(field)}
+
+            {field.type === 'checkbox' || field.type === 'switch' ? (
+                <Label htmlFor={field.name} className={`ml-2 ${errors[field.name] ? 'text-red-500' : ''}`}>
+                    {field.label}
+                    {field.required && <span className="ml-1 text-red-500">*</span>}
+                </Label>
+            ) : null}
+
+            {field.helpText && <p className="text-sm text-gray-500">{field.helpText}</p>}
+
+            {errors[field.name] && <p className="text-sm text-red-500">{errors[field.name]}</p>}
+        </div>
+    );
 
     return (
         <>
@@ -505,41 +597,25 @@ export default function GlobalForm({
                 </CardHeader>
                 <form onSubmit={handleSubmit} encType="multipart/form-data">
                     <CardContent className="space-y-4">
-                        {fields.map((field) => (
-                            <div key={field.name} className={`space-y-2 ${errors[field.name] ? 'error-field' : ''}`}>
-                                {field.type !== 'checkbox' && field.type !== 'switch' && (
-                                    <Label htmlFor={field.name} className={errors[field.name] ? 'text-red-500' : ''}>
-                                        {field.label}
-                                        {field.required && <span className="ml-1 text-red-500">*</span>}
-                                    </Label>
-                                )}
+                        {layoutType === 'sectioned' ? (
+                            <SectionedFormLayout sections={sections} fields={fields} renderFieldBlock={renderFieldBlock} />
+                        ) : layoutType === 'two-column' ? (
+                            <TwoColumnFormLayout fields={fields} renderFieldBlock={renderFieldBlock} />
+                        ) : (
+                            <SingleColumnFormLayout fields={fields} renderFieldBlock={renderFieldBlock} />
+                        )}
 
-                                {renderField(field)}
-
-                                {field.type === 'checkbox' || field.type === 'switch' ? (
-                                    <Label htmlFor={field.name} className={`ml-2 ${errors[field.name] ? 'text-red-500' : ''}`}>
-                                        {field.label}
-                                        {field.required && <span className="ml-1 text-red-500">*</span>}
-                                    </Label>
-                                ) : null}
-
-                                {field.helpText && <p className="text-sm text-gray-500">{field.helpText}</p>}
-
-                                {errors[field.name] && <p className="text-sm text-red-500">{errors[field.name]}</p>}
-                            </div>
-                        ))}
-                    </CardContent>
-
-                    <CardFooter className="mt-2 flex justify-center space-x-2">
-                        {cancelUrl || cancelLabel !== 'Cancel' ? (
-                            <Button type="button" variant="outline" onClick={handleCancel}>
-                                {cancelLabel}
+                        <CardFooter className="mt-2 flex justify-center space-x-2">
+                            {cancelUrl || cancelLabel !== 'Cancel' ? (
+                                <Button type="button" variant="outline" onClick={handleCancel}>
+                                    {cancelLabel}
+                                </Button>
+                            ) : null}
+                            <Button type="submit" disabled={processing}>
+                                {processing ? 'Processing...' : submitLabel}
                             </Button>
-                        ) : null}
-                        <Button type="submit" disabled={processing}>
-                            {processing ? 'Processing...' : submitLabel}
-                        </Button>
-                    </CardFooter>
+                        </CardFooter>
+                    </CardContent>
                 </form>
             </Card>
 

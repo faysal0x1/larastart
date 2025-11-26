@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -42,7 +41,7 @@ trait HasTranslations
      */
     public function setTranslatedAttribute(string $attribute, string $value, ?string $locale = null): void
     {
-        $locale = $locale ?: app()->getLocale();
+        $locale      = $locale ?: app()->getLocale();
         $translation = $this->translations()->updateOrCreate(
             ['locale' => $locale],
             [$attribute => $value]
@@ -54,13 +53,13 @@ trait HasTranslations
      */
     public function scopeWithTranslation(Builder $query, ?string $locale = null): Builder
     {
-        $locale = $locale ?: app()->getLocale();
+        $locale           = $locale ?: app()->getLocale();
         $translationModel = $this->getTranslationModel();
         $translationTable = (new $translationModel)->getTable();
 
         return $query->join($translationTable, function ($join) use ($translationTable) {
-            $join->on($this->getTable().'.id', '=', $translationTable.'.'.$this->getTranslationForeignKey())
-                ->where($translationTable.'.locale', app()->getLocale());
+            $join->on($this->getTable() . '.id', '=', $translationTable . '.' . $this->getTranslationForeignKey())
+                ->where($translationTable . '.locale', app()->getLocale());
         });
     }
 
@@ -69,14 +68,14 @@ trait HasTranslations
      */
     public function scopeWhereTranslated(Builder $query, string $attribute, string $value, ?string $locale = null): Builder
     {
-        $locale = $locale ?: app()->getLocale();
+        $locale           = $locale ?: app()->getLocale();
         $translationModel = $this->getTranslationModel();
         $translationTable = (new $translationModel)->getTable();
 
         return $query->join($translationTable, function ($join) use ($translationTable, $locale, $attribute, $value) {
-            $join->on($this->getTable().'.id', '=', $translationTable.'.'.$this->getTranslationForeignKey())
-                ->where($translationTable.'.locale', $locale)
-                ->where($translationTable.'.'.$attribute, 'like', "%{$value}%");
+            $join->on($this->getTable() . '.id', '=', $translationTable . '.' . $this->getTranslationForeignKey())
+                ->where($translationTable . '.locale', $locale)
+                ->where($translationTable . '.' . $attribute, 'like', "%{$value}%");
         });
     }
 
@@ -95,7 +94,7 @@ trait HasTranslations
      */
     protected function getTranslationForeignKey(): string
     {
-        return strtolower(class_basename($this)).'_id';
+        return strtolower(class_basename($this)) . '_id';
     }
 
     /**

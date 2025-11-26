@@ -1,0 +1,49 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./resources/js/*"
+            ],
+            "@/components/*": [
+                "./resources/js/components/*"
+            ],
+            "@/layouts/*": [
+                "./resources/js/layouts/*"
+            ],
+            "@/pages/*": [
+                "./resources/js/pages/*"
+            ],
+            "@/utils/*": [
+                "./resources/js/utils/*"
+            ],
+            "@/hooks/*": [
+                "./resources/js/hooks/*"
+            ],
+            "ziggy-js": [
+                "./vendor/tightenco/ziggy"
+            ]
+        },
+        "jsx": "react-jsx",
+        "allowJs": true,
+        "checkJs": false,
+        "moduleResolution": "node",
+        "target": "ESNext",
+        "module": "ESNext",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
+        "skipLibCheck": true
+    },
+    "include": [
+        "resources/js/**/*.js",
+        "resources/js/**/*.jsx",
+        "resources/js/**/*.ts",
+        "resources/js/**/*.tsx"
+    ],
+    "exclude": [
+        "node_modules",
+        "vendor"
+    ]
+}

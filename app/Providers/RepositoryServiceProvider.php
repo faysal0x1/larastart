@@ -1,31 +1,35 @@
 <?php
+
 // app/Providers/RepositoryServiceProvider.php
 
 namespace App\Providers;
 
-use App\Repositories\BlogCategoryRepository;
-use App\Repositories\BlogRepository;
-use App\Repositories\CountryRepository;
-use App\Repositories\Interfaces\BlogCategoryRepositoryInterface;
-use App\Repositories\Interfaces\BlogRepositoryInterface;
-use App\Repositories\Interfaces\CountryRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
-	public function register(): void {
-		$this->app->bind(CountryRepositoryInterface::class, CountryRepository::class);
-		$this->app->bind(BlogRepositoryInterface::class, BlogRepository::class);
-		$this->app->bind(BlogCategoryRepositoryInterface::class, BlogCategoryRepository::class);
+    protected array $repositories = [
+        'Country',
+        'Tag',
+        // 'Blog', // Moved to Blog module
+        // 'BlogCategory', // Moved to Blog module
+        'FaqType',
+        'Faq',
+        'Subject',
+    ];
 
+    public function register(): void
+    {
+        foreach ($this->repositories as $name) {
+            $this->app->bind(
+                "App\\Repositories\\Interfaces\\{$name}RepositoryInterface",
+                "App\\Repositories\\{$name}Repository"
+            );
+        }
+    }
 
-
-
-
-	}
-
-
-	public function boot(): void {
-		//
-	}
+    public function boot(): void
+    {
+        //
+    }
 }

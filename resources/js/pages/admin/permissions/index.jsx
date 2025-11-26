@@ -1,6 +1,6 @@
 import ActionsDropdown from '@/components/ActionsDropdown';
 import ListingPage from '@/components/ListingPage';
-import { createActionsColumn, createColumn, createDateColumn, createTagsColumn } from '@/utils/tableUtils';
+import { column, createActionsColumn, createColumn, createDateColumn, createTagsColumn } from '@/utils/tableUtils';
 import { Link, usePage } from '@inertiajs/react';
 
 export default function PermissionsIndex() {
@@ -25,14 +25,32 @@ export default function PermissionsIndex() {
         )),
 
         createDateColumn('created_at', 'Created'),
-        createActionsColumn((row) => (
+
+
+        column('actions', 'Actions', (item) => (
             <ActionsDropdown
-                item={row.original}
-                routes={{
-                    view: (id) => route('permissions.show', id),
-                    edit: (id) => route('permissions.edit', id),
-                    delete: (id) => route('permissions.destroy', id),
-                }}
+                item={item}
+                actions={[
+                    {
+                        type: 'view',
+                        label: 'View',
+                        route: (id) => route('permissions.show', id),
+                        // permission: 'quiz.view'
+                    },
+                    {
+                        type: 'edit',
+                        label: 'Edit',
+                        route: (id) => route('permissions.edit', id),
+                        // permission: 'quiz.edit'
+                    },
+                    {
+                        type: 'delete',
+                        label: 'Delete',
+                        route: (id) => route('permissions.destroy', id),
+                        method: 'delete',
+                        // permission: 'quiz.delete'
+                    },
+                ]}
             />
         )),
     ];
