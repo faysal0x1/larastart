@@ -16,7 +16,7 @@
         "laravel-12"
     ],
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "homepage": "https://github.com/faysal0x1/larastart",
     "support": {
         "issues": "https://github.com/faysal0x1/larastart/issues",
@@ -90,7 +90,7 @@
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
         "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+            "@php -r \"file_exists('.env') || (file_exists('.env.example') && copy('.env.example', '.env'));\""
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi",
