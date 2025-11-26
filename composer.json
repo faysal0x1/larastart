@@ -16,7 +16,7 @@
         "laravel-12"
     ],
     "license": "MIT",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "homepage": "https://github.com/faysal0x1/larastart",
     "support": {
         "issues": "https://github.com/faysal0x1/larastart/issues",
@@ -99,8 +99,8 @@
         ],
         "post-create-project-cmd": [
             "@php setup-directories.php",
+            "@php setup-database.php",
             "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ],
         "dev": [

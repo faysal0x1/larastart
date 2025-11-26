@@ -35,6 +35,13 @@ composer create-project faysal0x1/larastart my-project
 cd my-project
 ```
 
+During installation, you'll be prompted to configure your database:
+- **Database Type**: Choose between MySQL/MariaDB, PostgreSQL, or SQLite
+- **Database Credentials**: Enter database name, host, port, username, and password
+- The `.env` file will be automatically updated with your settings
+
+> 💡 **Tip**: You can skip the interactive setup by pressing `Ctrl+C` and manually edit the `.env` file later.
+
 ### Manual Installation
 
 1. Clone the repository:
