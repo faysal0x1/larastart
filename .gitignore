@@ -41,3 +41,7 @@ yarn-error.log
 *.heif
 /npmPackage/admin-ui-kit/node_modules
 /npmPackage/admin-ui-kit/dist
+
+# Backup/copy files
+* copy.php
+*.copy.php
