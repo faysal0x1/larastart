@@ -2,12 +2,38 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "faysal0x1/larastart",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "A comprehensive Laravel starter kit with Inertia.js, React, module-based architecture, e-commerce features, admin panel, and more.",
     "keywords": [
         "laravel",
-        "framework"
+        "framework",
+        "starter-kit",
+        "inertia",
+        "react",
+        "e-commerce",
+        "laravel-modules",
+        "spatie-permissions",
+        "admin-panel",
+        "laravel-12"
     ],
     "license": "MIT",
+    "version": "1.0.0",
+    "homepage": "https://github.com/faysal0x1/larastart",
+    "support": {
+        "issues": "https://github.com/faysal0x1/larastart/issues",
+        "source": "https://github.com/faysal0x1/larastart"
+    },
+    "authors": [
+        {
+            "name": "Faysal",
+            "email": "your-email@example.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/faysal0x1/larastart"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "ext-gd": "*",
