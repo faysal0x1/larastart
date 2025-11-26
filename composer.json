@@ -40,6 +40,7 @@
         "inertiajs/inertia-laravel": "^2.0",
         "intervention/image": "^3.11",
         "intervention/image-laravel": "^1.5",
+        "joshbrw/laravel-module-installer": "^2.0",
         "karim007/sslcommerz-laravel": "^2.4",
         "laravel/framework": "^12.0",
         "laravel/reverb": "^1.0",
@@ -123,6 +124,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
+            "joshbrw/laravel-module-installer": true,
             "pestphp/pest-plugin": true,
             "php-http/discovery": true,
             "wikimedia/composer-merge-plugin": true
