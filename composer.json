@@ -84,6 +84,7 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php -r \"if (!is_dir('bootstrap/cache')) { mkdir('bootstrap/cache', 0755, true); }\"",
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
@@ -93,6 +94,7 @@
             "@php -r \"file_exists('.env') || (file_exists('.env.example') && copy('.env.example', '.env'));\""
         ],
         "post-create-project-cmd": [
+            "@php -r \"if (!is_dir('bootstrap/cache')) { mkdir('bootstrap/cache', 0755, true); }\"",
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
