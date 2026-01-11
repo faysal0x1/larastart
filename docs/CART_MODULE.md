@@ -13,14 +13,14 @@ MODULE_CART_ENABLED=true
 ```
 
 ## Database
-- Migrations auto-loaded from `app/Modules/Cart/database/migrations`
+- Migrations auto-loaded from `Modules/Cart/database/migrations`
 - Tables: `carts`, `cart_items`
 
 ## Middleware
 - `App\Modules\Cart\Http\Middleware\EnsureCartSession` sets `cart_session` cookie for guests.
 
 ## Routes
-- Defined in `app/Modules/Cart/routes/api.php`
+- Defined in `Modules/Cart/routes/api.php`
 - Endpoints (prefixed with `/api/cart`):
   - GET `/` — show cart
   - POST `/add` — add item (product_id, quantity)

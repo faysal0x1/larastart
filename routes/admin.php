@@ -9,10 +9,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('posts/{id}', [PostController::class, 'show'])->name('posts.show');
 
     // Roles, Permissions, and User Role Assignments routes are now in AccessControl module
-    // See: app/Modules/AccessControl/routes/admin.php
+    // See: Modules/AccessControl/routes/admin.php
 
     // Users routes are now in User module
-    // See: app/Modules/User/routes/admin.php
+    // See: Modules/User/routes/admin.php
 
     Route::prefix('admin')->group(function () {
         // Variation types endpoints

@@ -41,7 +41,7 @@ Route::middleware(['auth'])->group(function () {
         // CONTENT MANAGEMENT ROUTES
         // ========================================
 
-        // Blog Management routes are now in Blog module (app/Modules/Blog/routes/admin.php)
+        // Blog Management routes are now in Blog module (Modules/Blog/routes/admin.php)
 
         Route::get('post', [PostController::class, 'index'])->name('post.index');
         Route::get('post/create', [PostController::class, 'create'])->name('post.create');

@@ -1,7 +1,7 @@
 <?php
 
 // Build path relative to config directory
-$moduleConfigPath = dirname(__DIR__) . '/app/Modules/ServiceWorker/Config/service-worker.php';
+$moduleConfigPath = dirname(__DIR__) . '/Modules/ServiceWorker/Config/service-worker.php';
 
 if (file_exists($moduleConfigPath)) {
     return require $moduleConfigPath;

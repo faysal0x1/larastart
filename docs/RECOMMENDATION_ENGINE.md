@@ -19,7 +19,7 @@ The engine provides multiple recommendation algorithms behind a single API. It s
  - Service: `App\Modules\Recommendation\Services\RecommendationService`
  - Algorithms: `App\Modules\Recommendation\Services\Algorithms\*`
  - Provider: `App\Modules\Recommendation\Providers\RecommendationModuleServiceProvider`
- - Config: `config/recommendations.php` (+ optional overlay `app/Modules/Recommendation/config/recommendations.php`)
+ - Config: `config/recommendations.php` (+ optional overlay `Modules/Recommendation/config/recommendations.php`)
  - Controller: `App\Modules\Recommendation\Http\Controllers\RecommendationController`
  - Middleware: `App\Modules\Recommendation\Http\Middleware\EnsureRecommendationSession`
  - Job/Command: `App\Modules\Recommendation\Jobs\LogRecommendationImpression`, `App\Modules\Recommendation\Console\RecomputeRecommendations`
@@ -80,7 +80,7 @@ return [
 
 Middleware `EnsureRecommendationSession` issues a long-lived cookie `rec_session` for anonymous users and attaches it to recommendation requests. The controller falls back to `session_id` when `user_id` is absent.
 
-The module route group applies the middleware in `app/Modules/Recommendation/routes/api.php`:
+The module route group applies the middleware in `Modules/Recommendation/routes/api.php`:
 ```php
 Route::prefix('/api')->middleware([\App\Modules\Recommendation\Http\Middleware\EnsureRecommendationSession::class])->group(function () {
     Route::get('/recommendations', [\App\Modules\Recommendation\Http\Controllers\RecommendationController::class, 'index']);
@@ -150,7 +150,7 @@ For cart page with FBT:
 
 ## Adding a New Algorithm
 
-1) Create a class implementing `RecommendationAlgorithm` under `app/Modules/Recommendation/Services/Algorithms/`:
+1) Create a class implementing `RecommendationAlgorithm` under `Modules/Recommendation/Services/Algorithms/`:
 ```php
 class MyNewAlgo implements RecommendationAlgorithm {
   public function key(): string { return 'my_algo_v1'; }
